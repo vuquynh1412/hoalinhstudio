@@ -1,0 +1,64 @@
+{
+  "Common": {
+    "localeSwitcher": "Language",
+    "cta": {
+      "primary": "Book a consultation",
+      "secondary": "View services"
+    }
+  },
+  "Metadata": {
+    "Home": {
+      "title": "Hoa Linh | Wellness rooted in Vietnamese botanicals",
+      "description": "Hoa Linh develops wellness experiences inspired by Vietnamese botanicals, pairing modern standards with long-term care in every product.",
+      "keywords": [
+        "Hoa Linh",
+        "Vietnamese botanicals",
+        "wellness",
+        "natural products",
+        "Vietnamese herbs"
+      ]
+    }
+  },
+  "HomePage": {
+    "brand": "Hoa Linh",
+    "navigation": {
+      "story": "Story",
+      "services": "Services",
+      "contact": "Contact"
+    },
+    "hero": {
+      "eyebrow": "Vietnamese botanicals. Modern standards.",
+      "title": "Wellness shaped by the quiet intelligence of herbs.",
+      "description": "Hoa Linh supports everyday care with gentle, transparent products built for families and developed with long-term responsibility.",
+      "imageAlt": "Fresh green botanical leaves in natural light"
+    },
+    "promise": {
+      "eyebrow": "Trust at the root",
+      "title": "Every formula begins with care for people, provenance, and quality.",
+      "description": "From ingredient sourcing to everyday use, Hoa Linh prioritizes clear origins, consistent standards, and a brand voice people can understand quickly."
+    },
+    "services": {
+      "eyebrow": "Focus",
+      "title": "A foundation for a wellness brand that is easier to trust, remember, and scale.",
+      "items": [
+        {
+          "title": "Brand story",
+          "description": "Clarify Hoa Linh's role in everyday wellness and family care."
+        },
+        {
+          "title": "Product portfolio",
+          "description": "Organize content around needs, benefits, and proof so people can decide with confidence."
+        },
+        {
+          "title": "Digital presence",
+          "description": "Optimize the landing page for speed, search visibility, and conversion from visit to inquiry."
+        }
+      ]
+    },
+    "cta": {
+      "eyebrow": "Begin",
+      "title": "Hoa Linh is ready for a clearer digital experience.",
+      "description": "A lean Next.js foundation with multilingual routing and long-term SEO structure already in place."
+    }
+  }
+}

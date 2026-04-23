@@ -1,0 +1,17 @@
+.DS_Store
+.agents/
+.claude/
+.playwright-cli/
+.env*
+!.env.example
+.next/
+node_modules/
+out/
+dist/
+logo Hoa Linh.svg
+logo Hoa Linh full.svg
+sunset sky.mp4
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*

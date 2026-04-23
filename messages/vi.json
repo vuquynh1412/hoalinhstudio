@@ -1,0 +1,64 @@
+{
+  "Common": {
+    "localeSwitcher": "Ngôn ngữ",
+    "cta": {
+      "primary": "Đặt lịch tư vấn",
+      "secondary": "Xem dịch vụ"
+    }
+  },
+  "Metadata": {
+    "Home": {
+      "title": "Hoa Linh | Chăm sóc sức khỏe từ dược liệu Việt",
+      "description": "Hoa Linh phát triển các giải pháp chăm sóc sức khỏe lấy cảm hứng từ dược liệu Việt, kết hợp tiêu chuẩn hiện đại và sự tận tâm trong từng sản phẩm.",
+      "keywords": [
+        "Hoa Linh",
+        "dược liệu Việt",
+        "chăm sóc sức khỏe",
+        "sản phẩm thiên nhiên",
+        "thảo dược Việt Nam"
+      ]
+    }
+  },
+  "HomePage": {
+    "brand": "Hoa Linh",
+    "navigation": {
+      "story": "Câu chuyện",
+      "services": "Dịch vụ",
+      "contact": "Liên hệ"
+    },
+    "hero": {
+      "eyebrow": "Dược liệu Việt. Tiêu chuẩn hiện đại.",
+      "title": "Chăm sóc sức khỏe bằng tinh hoa thảo mộc.",
+      "description": "Hoa Linh đồng hành cùng gia đình Việt qua những sản phẩm lành tính, minh bạch và được phát triển với trách nhiệm dài hạn.",
+      "imageAlt": "Lá thảo mộc xanh trong ánh sáng tự nhiên"
+    },
+    "promise": {
+      "eyebrow": "Niềm tin từ gốc",
+      "title": "Mỗi công thức bắt đầu từ sự hiểu biết về con người, thổ nhưỡng và chất lượng.",
+      "description": "Từ vùng nguyên liệu đến trải nghiệm sử dụng, Hoa Linh ưu tiên nguồn gốc rõ ràng, tiêu chuẩn kiểm soát nhất quán và ngôn ngữ thương hiệu gần gũi."
+    },
+    "services": {
+      "eyebrow": "Trọng tâm",
+      "title": "Nền tảng cho một thương hiệu sức khỏe dễ tin, dễ nhớ và dễ mở rộng.",
+      "items": [
+        {
+          "title": "Câu chuyện thương hiệu",
+          "description": "Làm rõ vai trò của Hoa Linh trong đời sống chăm sóc sức khỏe hằng ngày."
+        },
+        {
+          "title": "Danh mục sản phẩm",
+          "description": "Tổ chức nội dung theo nhu cầu, lợi ích và bằng chứng để người dùng ra quyết định nhanh hơn."
+        },
+        {
+          "title": "Hiện diện số",
+          "description": "Tối ưu landing page cho tốc độ, khả năng tìm kiếm và chuyển đổi từ truy cập thành liên hệ."
+        }
+      ]
+    },
+    "cta": {
+      "eyebrow": "Bắt đầu",
+      "title": "Sẵn sàng làm mới trải nghiệm Hoa Linh.",
+      "description": "Một nền tảng Next.js gọn, đa ngôn ngữ và sẵn sàng mở rộng cho nội dung SEO dài hạn."
+    }
+  }
+}
