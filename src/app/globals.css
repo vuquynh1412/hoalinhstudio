@@ -26,6 +26,7 @@
 
 * {
   box-sizing: border-box;
+  letter-spacing: 0;
 }
 
 html {
@@ -39,6 +40,7 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+  line-height: 1.15;
 }
 
 .hero-screen {
@@ -60,8 +62,8 @@ body {
   }
 }
 
-.font-barlow {
-  font-family: var(--font-barlow), Arial, Helvetica, sans-serif;
+.font-montserrat {
+  font-family: var(--font-montserrat), Arial, Helvetica, sans-serif;
 }
 
 .font-instrument-serif {
@@ -90,27 +92,4 @@ a {
 .focus-ring:focus-visible {
   outline: 3px solid color-mix(in srgb, white 85%, transparent);
   outline-offset: 4px;
-}
-
-.liquid-glass-header {
-  background-color: rgba(15, 16, 17, 0.06);
-  box-shadow:
-    0 12px 34px rgba(0, 0, 0, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(24px) saturate(145%);
-  -webkit-backdrop-filter: blur(24px) saturate(145%);
-}
-
-.liquid-glass-header::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.08),
-    rgba(255, 255, 255, 0.02)
-  );
-  opacity: 1;
-  pointer-events: none;
 }
