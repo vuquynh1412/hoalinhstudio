@@ -90,6 +90,201 @@ a {
 }
 
 .focus-ring:focus-visible {
-  outline: 3px solid color-mix(in srgb, white 85%, transparent);
+  outline: 3px solid #111111;
   outline-offset: 4px;
+}
+
+.radiant-outline-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 3.5rem;
+  border: 1px solid rgba(39, 39, 42, 0.22);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.02);
+  color: #27272a;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  transition:
+    background-color 260ms ease-in-out,
+    border-color 260ms ease-in-out,
+    color 260ms ease-in-out,
+    transform 260ms ease-in-out,
+    box-shadow 260ms ease-in-out,
+    opacity 260ms ease-in-out;
+}
+
+.radiant-outline-pill::before,
+.hero-ghost-pill::before,
+.footer-fill-button::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 18%,
+    rgba(255, 255, 255, 0.04) 34%,
+    rgba(255, 255, 255, 0.7) 49%,
+    rgba(255, 255, 255, 0.04) 64%,
+    transparent 82%
+  );
+  transform: translateX(-145%) skewX(-18deg);
+  transition: transform 560ms ease-in-out;
+}
+
+.radiant-outline-pill svg,
+.hero-ghost-pill svg,
+.footer-fill-button svg {
+  transition: transform 320ms ease-in-out;
+}
+
+.radiant-outline-pill:hover {
+  background: #f7f2eb;
+  border-color: rgba(39, 39, 42, 0.34);
+  color: #111111;
+  transform: translateY(-1px);
+}
+
+.radiant-outline-pill:hover::before,
+.hero-ghost-pill:hover::before,
+.footer-fill-button:hover::before {
+  transform: translateX(145%) skewX(-18deg);
+}
+
+.radiant-outline-pill:hover svg,
+.hero-ghost-pill:hover svg,
+.footer-fill-button:hover svg {
+  transform: translateX(4px);
+}
+
+.radiant-outline-pill--light {
+  border-color: rgba(255, 255, 255, 0.38);
+  background: rgba(255, 255, 255, 0.02);
+  color: #ffffff;
+}
+
+.radiant-outline-pill--light:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.56);
+  color: #ffffff;
+}
+
+.hero-ghost-pill {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.footer-fill-button {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.footer-link-button {
+  transition:
+    background-color 260ms ease-in-out,
+    border-color 260ms ease-in-out,
+    color 260ms ease-in-out,
+    transform 260ms ease-in-out,
+    box-shadow 260ms ease-in-out,
+    opacity 260ms ease-in-out;
+}
+
+.footer-link-button:hover {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  color: #111111;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  transform: none;
+}
+
+.footer-social-pill {
+  transition:
+    background-color 260ms ease-in-out,
+    border-color 260ms ease-in-out,
+    color 260ms ease-in-out,
+    transform 260ms ease-in-out,
+    box-shadow 260ms ease-in-out,
+    opacity 260ms ease-in-out;
+}
+
+.footer-social-pill:hover {
+  background: transparent;
+  box-shadow: none;
+  color: #111111;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  transform: none;
+}
+
+.footer-text-link {
+  display: inline-flex;
+  align-items: center;
+  color: rgba(0, 0, 0, 0.55);
+  text-decoration: none;
+  transition:
+    color 260ms ease-in-out,
+    opacity 260ms ease-in-out,
+    text-decoration-color 260ms ease-in-out;
+}
+
+.footer-text-link:hover {
+  color: #111111;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.footer-contact-row {
+  display: flex;
+  width: 100%;
+}
+
+.scroll-reveal-word {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  white-space: pre;
+  vertical-align: top;
+  margin-right: 0.18em;
+}
+
+.scroll-reveal-word__shadow,
+.scroll-reveal-word__fill {
+  grid-area: 1 / 1;
+}
+
+.scroll-reveal-word__shadow {
+  color: #e8e8e8;
+}
+
+.scroll-reveal-word__fill {
+  color: #27272a;
+  opacity: var(--word-opacity, 0);
+  transition: opacity 0.12s linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-reveal-word,
+  .scroll-reveal-word__shadow,
+  .scroll-reveal-word__fill {
+    transition: none;
+  }
+
+  .scroll-reveal-word__shadow {
+    color: #27272a;
+  }
+
+  .scroll-reveal-word__fill {
+    opacity: 1;
+  }
 }

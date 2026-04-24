@@ -1,5 +1,9 @@
+"use client";
+
 import { Instrument_Serif, Montserrat } from "next/font/google";
 import Image from "next/image";
+import type { CSSProperties } from "react";
+import { useEffect, useRef } from "react";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -24,8 +28,11 @@ type HomePageProps = {
   locale: Locale;
 };
 
+const aboutRevealText =
+  "Hoa Linh Studio làm việc với khách hàng dựa trên sự rõ ràng và tôn trọng cam kết. Mỗi dự án đều được trao đổi minh bạch ngay từ đầu, phản hồi kịp thời trong quá trình thực hiện và luôn đảm bảo chất lượng ở từng giai đoạn.";
+
 const montserrat = Montserrat({
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   variable: "--font-montserrat",
   weight: ["400", "500", "600", "700"],
 });
@@ -45,7 +52,81 @@ const featuredInsight = {
   title: "Tại sao video là vũ khí chiến lược của thương hiệu trong thời đại số",
 } as const;
 
-export async function HomePage({ locale }: HomePageProps) {
+export function HomePage({ locale }: HomePageProps) {
+  const aboutSectionRef = useRef<HTMLElement | null>(null);
+  const aboutParagraphRef = useRef<HTMLParagraphElement | null>(null);
+  const aboutWordRefs = useRef<Array<HTMLSpanElement | null>>([]);
+
+  useEffect(() => {
+    const section = aboutSectionRef.current;
+    const paragraph = aboutParagraphRef.current;
+
+    if (!section || !paragraph) {
+      return;
+    }
+
+    const wordNodes = aboutWordRefs.current.filter(
+      (word): word is HTMLSpanElement => word !== null,
+    );
+
+    if (wordNodes.length === 0) {
+      return;
+    }
+
+    let frameId = 0;
+
+    const updateWords = () => {
+      const rect = paragraph.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const start = viewportHeight * 0.82;
+      const end = viewportHeight * 0.42;
+      const totalTravel = rect.height + (start - end);
+      const rawProgress = Math.min(
+        Math.max((start - rect.top) / Math.max(totalTravel, 1), 0),
+        1,
+      );
+      const progress = Math.min(rawProgress * 1.08, 1);
+
+      wordNodes.forEach((word, index) => {
+        const startAt = index / wordNodes.length;
+        const endAt = Math.min(startAt + 0.16, 1);
+        const opacity = Math.min(
+          Math.max(
+            (progress - startAt) / Math.max(endAt - startAt, 0.001),
+            0.16,
+          ),
+          1,
+        );
+
+        word.style.setProperty("--word-opacity", opacity.toFixed(3));
+      });
+    };
+
+    const onScroll = () => {
+      if (frameId) {
+        return;
+      }
+
+      frameId = window.requestAnimationFrame(() => {
+        updateWords();
+        frameId = 0;
+      });
+    };
+
+    updateWords();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+
+    return () => {
+      if (frameId) {
+        window.cancelAnimationFrame(frameId);
+      }
+
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
+
   return (
     <main
       className={cn(
@@ -77,25 +158,25 @@ export async function HomePage({ locale }: HomePageProps) {
                 className="hidden items-center justify-start gap-1 text-[16px] font-[500] text-black lg:flex"
               >
                 <a
-                  className="focus-ring inline-flex min-w-20 items-center justify-center rounded-full px-4 py-3 transition hover:bg-white/20"
+                  className="hero-ghost-pill focus-ring inline-flex min-w-20 items-center justify-center rounded-full border border-transparent bg-transparent px-4 py-3 text-[16px] font-[500] text-white/88 transition-[background-color,border-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:border-white/46 hover:bg-white/[0.06] hover:text-white"
                   href="#about"
                 >
                   Giới thiệu
                 </a>
                 <a
-                  className="focus-ring inline-flex min-w-20 items-center justify-center rounded-full px-4 py-3 transition hover:bg-white/20"
+                  className="hero-ghost-pill focus-ring inline-flex min-w-20 items-center justify-center rounded-full border border-transparent bg-transparent px-4 py-3 text-[16px] font-[500] text-white/88 transition-[background-color,border-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:border-white/46 hover:bg-white/[0.06] hover:text-white"
                   href="#works"
                 >
                   Dự án
                 </a>
                 <a
-                  className="focus-ring inline-flex min-w-20 items-center justify-center rounded-full px-4 py-3 transition hover:bg-white/20"
+                  className="hero-ghost-pill focus-ring inline-flex min-w-20 items-center justify-center rounded-full border border-transparent bg-transparent px-4 py-3 text-[16px] font-[500] text-white/88 transition-[background-color,border-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:border-white/46 hover:bg-white/[0.06] hover:text-white"
                   href="#services"
                 >
                   Dịch vụ
                 </a>
                 <a
-                  className="focus-ring inline-flex min-w-20 items-center justify-center rounded-full px-4 py-3 transition hover:bg-white/20"
+                  className="hero-ghost-pill focus-ring inline-flex min-w-20 items-center justify-center rounded-full border border-transparent bg-transparent px-4 py-3 text-[16px] font-[500] text-white/88 transition-[background-color,border-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:border-white/46 hover:bg-white/[0.06] hover:text-white"
                   href="#insights"
                 >
                   Thư viện
@@ -120,7 +201,7 @@ export async function HomePage({ locale }: HomePageProps) {
 
               <div className="flex items-center justify-end">
                 <a
-                  className="focus-ring inline-flex min-h-12 items-center gap-2 rounded-full bg-[#18181B] px-5 py-3 text-[16px] font-[500] text-white shadow-[0_12px_30px_rgba(0,0,0,0.18)] transition hover:bg-black"
+                  className="radiant-outline-pill radiant-outline-pill--light focus-ring px-5 py-3 text-[16px]"
                   href="#contact"
                 >
                   <span className="whitespace-nowrap">
@@ -143,41 +224,50 @@ export async function HomePage({ locale }: HomePageProps) {
                 </span>
               </h1>
 
-              <p className="mt-1 max-w-[800px] text-balance text-[14px] font-[400] text-white/60 drop-shadow-[0_8px_24px_rgba(0,0,0,0.28)] sm:text-[18px]">
+              <p className="mt-1 max-w-[800px] text-balance text-[14px] font-[500] text-white/80 drop-shadow-[0_8px_24px_rgba(0,0,0,0.28)] sm:text-[16px]">
                 Dịch vụ video viral dành cho Influencer, Creator và Doanh nghiệp
               </p>
 
               <a
-                className="focus-ring mt-4 inline-flex min-h-15 items-center gap-3 rounded-full bg-white px-4 py-3 text-[#141414] shadow-[0_12px_30px_rgba(0,0,0,0.14)] transition hover:-translate-y-0.5"
+                className="radiant-outline-pill radiant-outline-pill--light focus-ring mt-4 px-6 py-3 text-[15px]"
                 href="#works"
               >
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#141414] text-white">
-                  <ArrowRight size={18} strokeWidth={2.2} />
-                </span>
-                <span className="whitespace-nowrap pr-3 text-[15px] font-[500] text-[#141414]">
-                  Xem workreel
-                </span>
+                <span className="whitespace-nowrap">Xem Dự án</span>
+                <ArrowRight size={20} strokeWidth={2.2} />
               </a>
             </div>
           </div>
         </div>
       </section>
 
-      <section id="about" className="bg-white text-[#171717]">
-        <div className="mx-auto flex max-w-[1240px] flex-col items-center px-4 py-24 text-center sm:px-6 lg:px-10">
-          <p className="text-[13px] font-[700] text-black/50">CHÀO MỪNG ĐẾN</p>
-          <Image
-            alt="Hoa Linh Studio"
-            className="mt-4 h-20 w-auto object-contain"
-            height={80}
-            src="/logo-hoa-linh-full.svg"
-            width={320}
-          />
-          <p className="mt-10 max-w-[760px] text-[15px] font-[500] uppercase text-black/45">
-            HOA LINH STUDIO không chỉ là nơi sản xuất video, mà là không gian
-            nơi ý tưởng được nuôi dưỡng và chuyển hóa thành hình ảnh sống động.
+      <section
+        className="relative flex min-h-screen items-center justify-center bg-white text-[#27272a]"
+        id="about"
+        ref={aboutSectionRef}
+      >
+        <div className="mx-auto w-full max-w-[1200px] px-4 py-25 sm:px-6 lg:px-10">
+          <p
+            className="mx-auto max-w-[1200px] text-center text-[14px] font-[700] leading-[1.32] tracking-[-0.04em] text-[#27272a] sm:text-[18px] md:text-[24px] lg:text-[31px] xl:text-[36px]"
+            ref={aboutParagraphRef}
+          >
+            {aboutRevealText.split(" ").map((word, index) => (
+              <span
+                className="scroll-reveal-word"
+                key={`${word}-${index}`}
+                ref={(node) => {
+                  aboutWordRefs.current[index] = node;
+                }}
+                style={
+                  {
+                    "--word-opacity": 0,
+                  } as CSSProperties
+                }
+              >
+                <span className="scroll-reveal-word__shadow">{word}</span>
+                <span className="scroll-reveal-word__fill">{word}</span>
+              </span>
+            ))}
           </p>
-          <div className="mt-12 h-px w-16 bg-primary/70" />
         </div>
       </section>
 
@@ -270,7 +360,7 @@ export async function HomePage({ locale }: HomePageProps) {
                   {featuredInsight.description}
                 </p>
                 <a
-                  className="mt-6 inline-flex items-center gap-2 rounded-full border border-primary px-5 py-3 text-[15px] font-[500] text-black transition hover:bg-primary/10"
+                  className="radiant-outline-pill mt-6 px-5 py-3 text-[15px]"
                   href="#contact"
                 >
                   <span>Xem thêm</span>
@@ -308,7 +398,7 @@ export async function HomePage({ locale }: HomePageProps) {
       <section id="contact" className="bg-white text-[#171717]">
         <div className="mx-auto max-w-[1320px] px-4 py-24 sm:px-6 lg:px-10">
           <div className="flex flex-col items-center text-center">
-            <h2 className="max-w-[980px] text-[40px] font-[700] uppercase text-[#27272a] sm:text-[54px] lg:text-[70px]">
+            <h2 className="max-w-[980px] text-[32px] font-[700] uppercase text-[#27272a] sm:text-[54px] lg:text-[54px]">
               Biến tầm nhìn
               <br />
               thành thước phim đắt giá
@@ -318,7 +408,7 @@ export async function HomePage({ locale }: HomePageProps) {
               giá trị thương hiệu.
             </p>
             <a
-              className="mt-8 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-4 text-[16px] font-[600] text-primary-foreground transition hover:brightness-95"
+              className="radiant-outline-pill mt-8 px-6 py-4 text-[16px] font-[600]"
               href="mailto:hello@hoalinh.vn"
             >
               <span>Liên hệ ngay</span>
@@ -327,7 +417,7 @@ export async function HomePage({ locale }: HomePageProps) {
           </div>
 
           <footer className="mt-20 border-t border-black/10 pt-12">
-            <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.15fr_0.8fr_0.8fr_1.45fr] lg:items-start">
               <div className="flex flex-col items-start gap-5">
                 <Image
                   alt="Hoa Linh Studio"
@@ -369,20 +459,22 @@ export async function HomePage({ locale }: HomePageProps) {
 
               <div className="space-y-5">
                 <FooterHeading>Liên hệ</FooterHeading>
-                <FooterContact icon={<Phone size={18} />} text="0123456789" />
-                <FooterContact icon={<Mail size={18} />} text="abc@gmail.com" />
-                <FooterContact
-                  icon={<MapPin size={18} />}
-                  text="123 abc, bcd, Hồ Chí Minh"
-                />
+                <div className="space-y-3">
+                  <FooterContact icon={<Phone size={18} />} text="0123456789" />
+                  <FooterContact icon={<Mail size={18} />} text="abc@gmail.com" />
+                  <FooterContact
+                    icon={<MapPin size={18} />}
+                    text="123 abc, bcd, Hồ Chí Minh"
+                  />
+                </div>
                 <div className="flex gap-2">
                   <input
-                    className="min-w-0 flex-1 rounded-full border border-black/10 bg-white px-4 py-3 text-[14px] text-black placeholder:text-black/40"
+                    className="min-w-0 flex-1 rounded-full border border-black/10 bg-white px-4 py-3 text-[14px] text-black placeholder:text-black/40 transition-colors duration-200 ease-in-out focus:border-[#111111] focus:outline-none"
                     placeholder="Nhập email để nhận tư vấn"
                     type="email"
                   />
                   <button
-                    className="rounded-full bg-primary px-5 py-3 text-[14px] font-[600] text-primary-foreground"
+                    className="footer-fill-button inline-flex min-h-14 items-center justify-center rounded-full bg-[#111111] px-6 py-3 text-[14px] font-[600] text-white transition-colors duration-200 ease-in-out hover:bg-black focus:outline-none"
                     type="button"
                   >
                     Gửi
@@ -407,10 +499,7 @@ function SectionTitle({ title }: { title: string }) {
 
 function OutlinePillButton({ href, label }: { href: string; label: string }) {
   return (
-    <a
-      className="inline-flex items-center gap-2 rounded-full border border-black/20 px-5 py-3 text-[15px] font-[500] text-black transition hover:border-black/40"
-      href={href}
-    >
+    <a className="radiant-outline-pill px-5 py-3 text-[15px]" href={href}>
       <span>{label}</span>
       <ArrowUpRight size={18} />
     </a>
@@ -423,7 +512,11 @@ function FooterColumn({ items, title }: { items: string[]; title: string }) {
       <FooterHeading>{title}</FooterHeading>
       <ul className="mt-4 space-y-2 text-[14px] text-black/55">
         {items.map((item) => (
-          <li key={item}>{item}</li>
+          <li key={item}>
+            <a className="footer-text-link" href="#contact">
+              {item}
+            </a>
+          </li>
         ))}
       </ul>
     </div>
@@ -442,16 +535,19 @@ function FooterContact({
   text: string;
 }) {
   return (
-    <div className="flex items-center gap-2 text-[14px] text-black/55">
+    <a
+      className="footer-text-link footer-contact-row items-center gap-3 text-[14px]"
+      href="#contact"
+    >
       <span className="text-black/70">{icon}</span>
       <span>{text}</span>
-    </div>
+    </a>
   );
 }
 
 function SocialPill({ icon }: { icon: React.ReactNode }) {
   return (
-    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-black/70 shadow-[0_12px_24px_rgba(0,0,0,0.04)]">
+    <span className="footer-social-pill flex h-10 w-10 items-center justify-center rounded-full bg-white text-black/70 shadow-[0_12px_24px_rgba(0,0,0,0.04)]">
       {icon}
     </span>
   );
