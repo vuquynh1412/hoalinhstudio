@@ -1,18 +1,27 @@
 export const focusServices = [
   {
     image:
-      "https://www.figma.com/api/mcp/asset/0b467301-e03d-455b-886d-83fe1cc3192f",
+      "https://images.unsplash.com/photo-1707690614050-c0ff0b536ad3?auto=format&fit=crop&fm=jpg&q=80&w=1600",
     title: "Sản xuất truyền hình/Livestream",
+    eyebrow: "Sản xuất phim",
+    description:
+      "Thiết kế format, set quay và workflow phát sóng để mỗi buổi livestream giữ được nhịp xem và chuyển đổi rõ ràng.",
   },
   {
     image:
-      "https://www.figma.com/api/mcp/asset/013f65f8-d36c-4636-be96-de3ed7bb2700",
+      "https://images.unsplash.com/photo-1768471125958-78556538fadc?auto=format&fit=crop&fm=jpg&q=80&w=1600",
     title: "Sản xuất phim thương hiệu",
+    eyebrow: "Chiến lược nội dung",
+    description:
+      "Xây dựng câu chuyện hình ảnh giúp thương hiệu xuất hiện chỉn chu, có chiều sâu và dễ ghi nhớ trên mọi điểm chạm số.",
   },
   {
     image:
-      "https://www.figma.com/api/mcp/asset/09ba1c35-180f-40f4-a140-50529e47c97c",
+      "https://images.unsplash.com/photo-1773525911805-bebab1d3e0e4?auto=format&fit=crop&fm=jpg&q=80&w=1600",
     title: "Hậu kỳ và kỹ thuật số",
+    eyebrow: "Hậu kỳ",
+    description:
+      "Tối ưu dựng phim, màu sắc và motion để bản phát hành cuối cùng sắc nét, đồng nhất và sẵn sàng cho nhiều nền tảng.",
   },
 ] as const;
 

@@ -182,6 +182,94 @@ a {
   overflow: hidden;
 }
 
+.header-cta-pill {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 3rem;
+  border: 1px solid rgba(24, 24, 27, 0.96);
+  color: #ffffff;
+  box-shadow: 0 10px 24px rgba(24, 24, 27, 0.14);
+  transition:
+    transform 260ms ease-in-out,
+    box-shadow 260ms ease-in-out,
+    background-color 260ms ease-in-out,
+    border-color 260ms ease-in-out,
+    color 260ms ease-in-out;
+}
+
+.header-cta-pill::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 18%,
+    rgba(255, 255, 255, 0.04) 34%,
+    rgba(255, 255, 255, 0.72) 49%,
+    rgba(255, 255, 255, 0.04) 64%,
+    transparent 82%
+  );
+  transform: translateX(-145%) skewX(-18deg);
+  transition: transform 560ms ease-in-out;
+}
+
+.header-cta-pill:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 36px rgba(24, 24, 27, 0.18);
+  background: #111111;
+  color: #ffffff;
+}
+
+.header-cta-pill:hover::before {
+  transform: translateX(145%) skewX(-18deg);
+}
+
+.service-carousel-card {
+  cursor: pointer;
+  will-change: transform, width, height, opacity;
+}
+
+.service-carousel-side-title {
+  transition:
+    transform 420ms ease,
+    opacity 420ms ease;
+}
+
+.service-carousel-card:hover .service-carousel-side-title {
+  transform: translateY(-6px);
+}
+
+.service-carousel-description {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translateY(8px);
+  transition:
+    max-height 420ms ease,
+    opacity 420ms ease,
+    transform 420ms ease;
+}
+
+.service-carousel-card--active:hover .service-carousel-description,
+.service-carousel-card--active:focus-visible .service-carousel-description {
+  max-height: 3.4em;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.works-depth-scene {
+  perspective: 1800px;
+  transform-style: preserve-3d;
+}
+
 .footer-fill-button {
   position: relative;
   isolation: isolate;
@@ -249,6 +337,102 @@ a {
   width: 100%;
 }
 
+.intro-loader {
+  pointer-events: none;
+  opacity: 1;
+  transition:
+    opacity 520ms ease-in-out,
+    visibility 520ms ease-in-out;
+}
+
+.intro-loader--closing {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.intro-loader__core {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(42vw, 260px);
+  aspect-ratio: 1;
+}
+
+.intro-loader__ring {
+  position: absolute;
+  inset: 10%;
+  border-radius: 999px;
+  border: 1px solid rgba(249, 176, 28, 0.5);
+  transform: scale(0.84);
+  animation: intro-loader-pulse 0.9s ease-in-out forwards;
+}
+
+.intro-loader__logo {
+  width: 100%;
+  height: auto;
+  transform-origin: center;
+  animation: intro-loader-spin 0.95s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.intro-loader__path {
+  fill: none;
+  stroke: rgba(249, 176, 28, 0.5);
+  stroke-width: 6.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: intro-loader-draw 0.85s ease-in-out forwards;
+}
+
+@keyframes intro-loader-draw {
+  0% {
+    stroke-dashoffset: 1;
+    opacity: 0.1;
+  }
+
+  18% {
+    opacity: 1;
+  }
+
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+@keyframes intro-loader-spin {
+  0% {
+    opacity: 0;
+    transform: rotate(-28deg) scale(0.82);
+  }
+
+  18% {
+    opacity: 1;
+  }
+
+  72% {
+    transform: rotate(10deg) scale(1);
+  }
+
+  100% {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+@keyframes intro-loader-pulse {
+  0% {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 .scroll-reveal-word {
   position: relative;
   display: inline-grid;
@@ -274,6 +458,14 @@ a {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .intro-loader,
+  .intro-loader__ring,
+  .intro-loader__logo,
+  .intro-loader__path {
+    animation: none;
+    transition: none;
+  }
+
   .scroll-reveal-word,
   .scroll-reveal-word__shadow,
   .scroll-reveal-word__fill {

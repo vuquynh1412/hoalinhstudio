@@ -3,8 +3,9 @@
 import { Instrument_Serif, Montserrat } from "next/font/google";
 import Image from "next/image";
 import type { CSSProperties } from "react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
+  ArrowLeft,
   ArrowRight,
   ArrowUpRight,
   Camera,
@@ -28,8 +29,26 @@ type HomePageProps = {
   locale: Locale;
 };
 
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(Math.max(value, min), max);
+
+const lerp = (start: number, end: number, progress: number) =>
+  start + (end - start) * progress;
+
+const worksSceneCards = [
+  { aspect: "portrait", baseX: 12, baseY: 20, baseScale: 1.02, width: 21, z: -240 },
+  { aspect: "portrait", baseX: 26, baseY: 64, baseScale: 0.96, width: 17, z: -140 },
+  { aspect: "square", baseX: 43, baseY: 24, baseScale: 0.86, width: 12, z: -120 },
+  { aspect: "portrait", baseX: 64, baseY: 23, baseScale: 0.72, width: 8.5, z: -90 },
+  { aspect: "square", baseX: 72, baseY: 65, baseScale: 1.02, width: 21, z: -230 },
+  { aspect: "portrait", baseX: 88, baseY: 18, baseScale: 0.96, width: 19, z: -180 },
+] as const;
+
 const aboutRevealText =
   "Hoa Linh Studio làm việc với khách hàng dựa trên sự rõ ràng và tôn trọng cam kết. Mỗi dự án đều được trao đổi minh bạch ngay từ đầu, phản hồi kịp thời trong quá trình thực hiện và luôn đảm bảo chất lượng ở từng giai đoạn.";
+
+const introVectorPath =
+  "M524.346 276.062C535.442 296.758 541.358 319.926 541.501 343.45C529.621 363.766 512.87 380.85 492.935 393.206C492.222 369.54 485.807 346.253 474.259 325.462C494.693 313.201 511.919 296.236 524.37 276.062H524.346ZM402.051 487.871C425.55 487.135 448.598 480.648 469.008 468.981C480.651 448.546 487.137 425.522 487.874 402.045C467.036 413.308 443.632 419.391 419.777 419.795C419.373 443.604 413.29 467.009 402.051 487.871ZM276.074 524.345C296.769 535.442 319.935 541.358 343.458 541.501C363.773 529.62 380.857 512.892 393.212 492.933C369.571 492.22 346.286 485.804 325.472 474.256C313.211 494.691 296.246 511.918 276.074 524.369V524.345ZM216.53 474.232C195.716 485.78 172.431 492.22 148.789 492.909C161.169 512.868 178.252 529.597 198.544 541.477C222.066 541.335 245.257 535.442 265.952 524.321C245.756 511.87 228.791 494.667 216.53 474.209V474.232ZM54.1281 402.045C54.8647 425.522 61.3513 448.57 72.9939 468.981C93.404 480.648 116.452 487.135 139.951 487.871C128.712 467.009 122.629 443.628 122.225 419.795C98.37 419.391 74.9898 413.308 54.1281 402.045ZM17.656 276.062C6.53611 296.758 0.643539 319.926 0.500977 343.402C12.3574 363.718 29.1085 380.826 49.0672 393.206C49.78 369.54 56.1953 346.253 67.7428 325.462C47.3089 313.201 30.0826 296.236 17.6322 276.086L17.656 276.062ZM67.7428 216.54C56.1953 195.749 49.7562 172.462 49.0672 148.796C29.0847 161.176 12.3574 178.284 0.500977 198.576C0.643539 222.052 6.53611 245.244 17.656 265.964C30.0826 245.79 47.3089 228.824 67.7666 216.564L67.7428 216.54ZM139.951 54.1067C116.452 54.8433 93.404 61.3302 72.9939 72.9971C61.3275 93.4081 54.841 116.457 54.1044 139.957C74.9422 128.694 98.3462 122.611 122.202 122.207C122.606 98.3505 128.688 74.9693 139.951 54.1067ZM265.952 17.6567C245.28 6.53638 222.09 0.643545 198.567 0.500977C178.276 12.3579 161.192 29.086 148.813 49.0456C172.479 49.7584 195.74 56.174 216.53 67.722C228.791 47.2635 245.779 30.0364 265.952 17.633V17.6567ZM325.448 67.722C346.238 56.174 369.523 49.7346 393.165 49.0456C380.81 29.086 363.726 12.3579 343.434 0.500977C319.935 0.643545 296.745 6.53638 276.05 17.6567C296.199 30.0839 313.164 47.2872 325.424 67.7458L325.448 67.722ZM487.874 139.933C487.137 116.433 480.651 93.3844 468.984 72.9733C448.574 61.3065 425.527 54.8196 402.028 54.083C413.29 74.9217 419.373 98.3267 419.777 122.183C443.632 122.587 467.012 128.67 487.874 139.933ZM524.346 265.94C535.442 245.244 541.358 222.029 541.501 198.505C529.621 178.213 512.87 161.128 492.935 148.772C492.222 172.439 485.807 195.725 474.259 216.516C494.717 228.777 511.919 245.743 524.37 265.916L524.346 265.94ZM401.956 346.634C413.242 367.496 419.349 390.925 419.753 414.758C443.703 414.354 467.179 407.986 487.898 396.247C487.684 372.415 481.459 348.915 469.84 328.005C448.978 339.576 425.645 345.992 401.933 346.657L401.956 346.634ZM346.642 401.974C345.953 425.664 339.538 448.998 327.99 469.837C348.923 481.456 372.446 487.681 396.254 487.895C407.968 467.151 414.335 443.699 414.739 419.771C390.908 419.367 367.504 413.237 346.642 401.974ZM323.618 467.294C335.166 446.384 341.367 422.908 341.605 399.146C322.026 387.575 305.347 371.631 292.849 352.645C291.518 375.314 285.031 397.459 273.888 417.229C285.958 437.711 303.066 454.938 323.595 467.294H323.618ZM200.373 399.146C200.611 422.932 206.812 446.384 218.36 467.294C238.889 454.938 255.996 437.711 268.067 417.229C256.923 397.436 250.436 375.29 249.106 352.645C236.632 371.631 219.928 387.575 200.35 399.146H200.373ZM195.36 401.974C174.498 413.261 151.118 419.367 127.263 419.771C127.667 443.699 134.034 467.151 145.748 487.895C169.556 487.681 193.055 481.456 214.012 469.837C202.464 448.998 196.049 425.664 195.36 401.974ZM140.022 346.634C116.309 345.968 92.9764 339.553 72.1147 327.981C60.4959 348.915 54.2707 372.415 54.0569 396.247C74.7759 407.962 98.2512 414.33 122.202 414.758C122.606 390.925 128.736 367.52 139.998 346.634H140.022ZM140.022 195.368C128.736 174.506 122.629 151.101 122.225 127.244C98.2749 127.648 74.7997 134.016 54.0806 145.755C54.2945 169.587 60.5197 193.087 72.1385 214.021C93.0001 202.449 116.309 196.034 140.022 195.368ZM195.36 140.004C196.025 116.29 202.44 92.9567 214.012 72.1179C193.103 60.4986 169.58 54.2731 145.772 54.0592C134.058 74.7792 127.667 98.2555 127.263 122.207C151.094 122.611 174.498 128.741 195.36 140.004ZM249.106 189.333C250.413 166.712 256.899 144.566 268.067 124.726C255.996 104.243 238.865 87.0163 218.36 74.6604C206.789 95.5704 200.587 119.047 200.373 142.832C219.976 154.404 236.655 170.348 249.13 189.309L249.106 189.333ZM341.629 142.856C341.415 119.07 335.213 95.5942 323.642 74.6841C303.113 87.0401 285.982 104.267 273.935 124.749C285.103 144.59 291.589 166.736 292.896 189.357C305.347 170.395 322.05 154.451 341.652 142.879L341.629 142.856ZM346.642 140.004C367.48 128.718 390.884 122.611 414.739 122.207C414.335 98.2555 407.944 74.7792 396.23 54.0592C372.422 54.2731 348.923 60.4986 327.99 72.1179C339.562 92.9804 345.977 116.314 346.642 140.004ZM401.956 195.368C425.669 196.034 449.002 202.449 469.84 214.021C481.459 193.087 487.684 169.587 487.898 145.755C467.179 134.04 443.703 127.672 419.753 127.244C419.349 151.101 413.219 174.506 401.956 195.368ZM414.716 414.734C414.288 390.83 407.92 367.401 396.206 346.657C373.468 346.396 351.062 340.931 330.77 330.761C340.963 351.053 346.428 373.484 346.666 396.224C367.361 407.938 390.813 414.306 414.716 414.734ZM195.312 396.224C195.574 373.484 201.039 351.053 211.232 330.761C190.94 340.955 168.511 346.42 145.796 346.681C134.082 367.401 127.714 390.854 127.286 414.758C151.189 414.33 174.641 407.962 195.336 396.247L195.312 396.224ZM195.312 145.755C174.617 134.04 151.166 127.672 127.263 127.244C127.69 151.172 134.058 174.601 145.772 195.321C168.534 195.582 190.964 201.024 211.208 211.217C201.015 190.925 195.55 168.494 195.312 145.755ZM346.666 145.755C346.405 168.494 340.963 190.925 330.77 211.217C351.014 201.024 373.444 195.558 396.206 195.321C407.92 174.625 414.288 151.172 414.716 127.244C390.813 127.672 367.361 134.04 346.666 145.755ZM124.72 268.055C144.513 256.91 166.681 250.424 189.325 249.093C170.34 236.618 154.421 219.938 142.849 200.358C119.065 200.572 95.59 206.774 74.6809 218.369C86.9887 238.852 104.191 255.96 124.72 268.055ZM189.325 292.861C166.705 291.555 144.536 285.068 124.72 273.9C104.215 285.994 86.9887 303.126 74.6809 323.609C95.59 335.181 119.065 341.382 142.849 341.62C154.397 322.064 170.34 305.36 189.325 292.861ZM417.258 273.9C397.418 285.068 375.273 291.555 352.654 292.861C371.614 305.336 387.558 322.041 399.129 341.62C422.913 341.406 446.388 335.204 467.297 323.609C454.989 303.103 437.763 285.994 417.258 273.9ZM352.654 249.093C375.321 250.424 397.466 256.91 417.258 268.055C437.787 255.96 454.989 238.852 467.297 218.369C446.388 206.798 422.913 200.596 399.129 200.358C387.558 219.938 371.638 236.642 352.654 249.093ZM20.531 271.001C32.625 291.483 49.78 308.71 70.2852 321.043C82.5456 300.608 99.5342 283.404 119.731 270.977C99.5342 258.55 82.5456 241.347 70.2852 220.936C49.7562 233.268 32.625 250.495 20.531 271.001ZM288.073 344.851C281.396 333.208 276.383 320.662 273.08 307.665C274.791 307.57 276.478 307.38 278.141 307.071C280.469 316.053 283.63 324.821 287.645 333.185C286.932 323.918 285.293 314.746 282.822 305.788C284.437 305.241 286.006 304.576 287.503 303.816C291.138 316.694 293.062 330.024 293.11 343.45C304.966 363.718 321.646 380.755 341.557 393.111C340.797 369.73 334.311 346.752 322.715 326.389C311.097 319.641 300.523 311.3 291.185 301.701C292.611 300.75 293.965 299.705 295.248 298.588C301.711 305.17 308.792 311.134 316.419 316.362C311.192 308.734 305.228 301.677 298.646 295.214C299.763 293.931 300.808 292.6 301.759 291.174C311.358 300.513 319.674 311.087 326.446 322.706C346.808 334.301 369.761 340.788 393.141 341.549C380.81 321.66 363.773 304.956 343.506 293.123C330.057 293.075 316.728 291.151 303.85 287.515C304.61 285.994 305.275 284.45 305.822 282.81C314.756 285.282 323.927 286.921 333.194 287.634C324.83 283.618 316.086 280.458 307.081 278.129C307.414 276.49 307.58 274.803 307.675 273.068C320.672 276.371 333.194 281.361 344.86 288.062C368.288 287.943 391.454 282.05 412.126 270.977C391.478 259.928 368.335 254.035 344.86 253.893C333.194 260.593 320.672 265.583 307.675 268.886C307.58 267.175 307.39 265.488 307.081 263.825C316.063 261.496 324.83 258.336 333.218 254.297C323.951 255.01 314.756 256.649 305.822 259.12C305.275 257.504 304.61 255.936 303.85 254.439C316.728 250.804 330.057 248.879 343.506 248.808C363.75 236.975 380.786 220.294 393.141 200.406C369.713 201.166 346.785 207.653 326.446 219.272C319.674 230.868 311.358 241.466 301.759 250.78C300.808 249.354 299.763 248 298.646 246.741C305.228 240.277 311.215 233.197 316.443 225.569C308.816 230.797 301.735 236.761 295.248 243.343C293.965 242.226 292.611 241.18 291.185 240.23C300.523 230.63 311.12 222.29 322.739 215.566C334.334 195.202 340.821 172.225 341.581 148.844C321.67 161.199 304.966 178.26 293.134 198.505C293.086 211.93 291.138 225.26 287.503 238.139C286.006 237.379 284.437 236.713 282.822 236.167C285.317 227.232 286.932 218.061 287.645 208.794C283.63 217.158 280.469 225.926 278.141 234.907C276.502 234.575 274.815 234.408 273.08 234.313C276.383 221.316 281.372 208.794 288.073 197.127C287.954 173.698 282.061 150.531 270.989 129.858C259.917 150.554 254.024 173.698 253.905 197.127C260.582 208.794 265.595 221.316 268.898 234.313C267.187 234.408 265.5 234.598 263.837 234.907C261.509 225.926 258.349 217.181 254.333 208.794C255.046 218.061 256.685 227.232 259.156 236.167C257.541 236.713 255.973 237.379 254.476 238.139C250.84 225.26 248.916 211.93 248.844 198.481C237.012 178.236 220.332 161.199 200.397 148.82C201.157 172.201 207.644 195.178 219.239 215.542C230.858 222.29 241.455 230.63 250.793 240.23C249.367 241.18 248.013 242.226 246.73 243.343C240.243 236.737 233.163 230.773 225.535 225.545C230.763 233.173 236.75 240.254 243.332 246.741C242.215 248.024 241.17 249.354 240.219 250.804C230.62 241.466 222.28 230.892 215.532 219.272C195.193 207.677 172.241 201.19 148.837 200.43C161.169 220.318 178.205 236.998 198.472 248.832C211.921 248.879 225.274 250.828 238.152 254.463C237.392 255.96 236.727 257.528 236.18 259.144C227.222 256.649 218.051 255.01 208.784 254.297C217.172 258.312 225.916 261.473 234.897 263.801C234.564 265.441 234.398 267.128 234.303 268.862C221.306 265.56 208.784 260.57 197.094 253.869C173.619 254.012 150.476 259.904 129.829 270.953C150.524 282.026 173.667 287.919 197.094 288.038C208.784 281.361 221.306 276.347 234.303 273.044C234.398 274.755 234.588 276.442 234.897 278.106C225.916 280.434 217.148 283.595 208.761 287.634C218.051 286.921 227.222 285.282 236.18 282.81C236.727 284.426 237.392 285.994 238.152 287.491C225.274 291.127 211.921 293.052 198.472 293.099C178.205 304.956 161.192 321.66 148.861 341.525C172.241 340.765 195.194 334.278 215.556 322.658C222.328 311.063 230.668 300.465 240.243 291.127C241.194 292.553 242.239 293.907 243.356 295.19C236.774 301.653 230.787 308.734 225.559 316.362C233.186 311.134 240.267 305.17 246.73 298.588C248.013 299.705 249.343 300.75 250.769 301.701C241.431 311.3 230.834 319.641 219.239 326.389C207.644 346.752 201.157 369.73 200.397 393.111C220.284 380.755 236.988 363.718 248.844 343.45C248.892 330.001 250.84 316.67 254.476 303.792C255.973 304.552 257.541 305.217 259.156 305.764C256.685 314.722 255.046 323.894 254.333 333.161C258.349 324.797 261.532 316.029 263.837 307.047C265.477 307.38 267.164 307.546 268.898 307.641C265.595 320.639 260.606 333.161 253.905 344.828C254.048 368.304 259.941 391.448 270.989 412.073C282.038 391.448 287.93 368.304 288.073 344.828V344.851ZM521.447 271.001C509.353 250.495 492.222 233.268 471.693 220.936C459.433 241.347 442.444 258.55 422.248 270.977C442.444 283.404 459.433 300.608 471.693 321.043C492.198 308.71 509.353 291.507 521.447 271.001ZM220.926 70.2883C241.384 82.5729 258.586 99.5861 270.989 119.76C283.392 99.5861 300.595 82.5967 321.052 70.2883C308.721 49.7584 291.494 32.6264 271.013 20.5556C250.508 32.6027 233.281 49.7584 220.926 70.2883ZM321.052 471.69C300.595 459.382 283.392 442.392 270.989 422.219C258.586 442.392 241.384 459.382 220.926 471.69C233.234 492.196 250.484 509.352 271.013 521.446C291.494 509.352 308.721 492.196 321.052 471.69Z";
 
 const montserrat = Montserrat({
   subsets: ["latin", "latin-ext"],
@@ -53,9 +72,58 @@ const featuredInsight = {
 } as const;
 
 export function HomePage({ locale }: HomePageProps) {
+  const [introState, setIntroState] = useState<"visible" | "closing" | "hidden">(
+    () => {
+      if (
+        typeof window !== "undefined" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ) {
+        return "hidden";
+      }
+
+      return "visible";
+    },
+  );
+  const [activeServiceIndex, setActiveServiceIndex] = useState(0);
+  const [serviceCursor, setServiceCursor] = useState<{
+    direction: "left" | "right";
+    index: number;
+    x: number;
+    y: number;
+  } | null>(null);
   const aboutSectionRef = useRef<HTMLElement | null>(null);
   const aboutParagraphRef = useRef<HTMLParagraphElement | null>(null);
   const aboutWordRefs = useRef<Array<HTMLSpanElement | null>>([]);
+  const worksSectionRef = useRef<HTMLElement | null>(null);
+  const [worksProgress, setWorksProgress] = useState(0);
+
+  const serviceCount = focusServices.length;
+
+  const goToService = (index: number) => {
+    setActiveServiceIndex((index + serviceCount) % serviceCount);
+  };
+
+  useEffect(() => {
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      return;
+    }
+
+    const closeTimer = window.setTimeout(() => {
+      setIntroState("closing");
+    }, 760);
+
+    const hideTimer = window.setTimeout(() => {
+      setIntroState("hidden");
+    }, 1080);
+
+    return () => {
+      window.clearTimeout(closeTimer);
+      window.clearTimeout(hideTimer);
+    };
+  }, []);
 
   useEffect(() => {
     const section = aboutSectionRef.current;
@@ -127,6 +195,48 @@ export function HomePage({ locale }: HomePageProps) {
     };
   }, []);
 
+  useEffect(() => {
+    const section = worksSectionRef.current;
+
+    if (!section) {
+      return;
+    }
+
+    let frameId = 0;
+
+    const updateScene = () => {
+      const rect = section.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const total = Math.max(section.offsetHeight - viewportHeight, 1);
+      const travelled = clamp(-rect.top, 0, total);
+      setWorksProgress(travelled / total);
+    };
+
+    const onScroll = () => {
+      if (frameId) {
+        return;
+      }
+
+      frameId = window.requestAnimationFrame(() => {
+        updateScene();
+        frameId = 0;
+      });
+    };
+
+    updateScene();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+
+    return () => {
+      if (frameId) {
+        window.cancelAnimationFrame(frameId);
+      }
+
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
+
   return (
     <main
       className={cn(
@@ -135,11 +245,13 @@ export function HomePage({ locale }: HomePageProps) {
         instrumentSerif.variable,
       )}
     >
-      <section className="hero-screen relative isolate flex overflow-hidden bg-black text-white">
+      {introState !== "hidden" && <IntroLoader state={introState} />}
+
+      <section className="hero-screen relative isolate flex overflow-hidden bg-[#f8f7f3] text-[#171717]">
         <video
           aria-hidden="true"
           autoPlay
-          className="absolute inset-0 z-0 h-full w-full object-cover pointer-events-none"
+          className="pointer-events-none absolute inset-0 z-0 h-full w-full scale-[1.08] object-cover object-center"
           loop
           muted
           playsInline
@@ -147,36 +259,52 @@ export function HomePage({ locale }: HomePageProps) {
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-[32vh] bg-[linear-gradient(180deg,rgba(255,255,255,0)_0%,#FFF_100%)]"
+          className="pointer-events-none absolute inset-0 z-[5] bg-white opacity-50"
+        />
+        <Image
+          alt="Hoa Linh Studio hero background"
+          className="z-10 object-cover object-center"
+          fill
+          priority
+          sizes="100vw"
+          src="/hero-banner-fullscreen.png"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-20 bg-[linear-gradient(180deg,rgba(255,255,255,0.03)_0%,rgba(255,255,255,0.05)_42%,rgba(248,247,243,0.26)_100%)]"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-[25] h-[160px] bg-[linear-gradient(180deg,rgba(255,255,255,0)_0%,rgba(255,255,255,0.72)_58%,#ffffff_100%)]"
         />
 
-        <div className="hero-screen relative z-20 flex w-full flex-col px-4 py-4">
-          <header className="relative z-30 mx-auto w-full max-w-[1440px]">
+        <div className="hero-screen relative z-30 flex w-full flex-col px-4 py-4">
+          <header className="relative z-40 mx-auto w-full max-w-[1440px]">
             <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
               <nav
                 aria-label="Primary"
                 className="hidden items-center justify-start gap-1 text-[16px] font-[500] text-black lg:flex"
               >
                 <a
-                  className="hero-ghost-pill focus-ring inline-flex min-w-20 items-center justify-center rounded-full border border-transparent bg-transparent px-4 py-3 text-[16px] font-[500] text-white/88 transition-[background-color,border-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:border-white/46 hover:bg-white/[0.06] hover:text-white"
+                  className="hero-ghost-pill focus-ring inline-flex min-w-20 items-center justify-center rounded-full border border-transparent bg-transparent px-4 py-3 text-[16px] font-[500] text-black/84 transition-[background-color,border-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:border-black/14 hover:bg-black/[0.03] hover:text-black"
                   href="#about"
                 >
                   Giới thiệu
                 </a>
                 <a
-                  className="hero-ghost-pill focus-ring inline-flex min-w-20 items-center justify-center rounded-full border border-transparent bg-transparent px-4 py-3 text-[16px] font-[500] text-white/88 transition-[background-color,border-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:border-white/46 hover:bg-white/[0.06] hover:text-white"
+                  className="hero-ghost-pill focus-ring inline-flex min-w-20 items-center justify-center rounded-full border border-transparent bg-transparent px-4 py-3 text-[16px] font-[500] text-black/84 transition-[background-color,border-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:border-black/14 hover:bg-black/[0.03] hover:text-black"
                   href="#works"
                 >
                   Dự án
                 </a>
                 <a
-                  className="hero-ghost-pill focus-ring inline-flex min-w-20 items-center justify-center rounded-full border border-transparent bg-transparent px-4 py-3 text-[16px] font-[500] text-white/88 transition-[background-color,border-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:border-white/46 hover:bg-white/[0.06] hover:text-white"
+                  className="hero-ghost-pill focus-ring inline-flex min-w-20 items-center justify-center rounded-full border border-transparent bg-transparent px-4 py-3 text-[16px] font-[500] text-black/84 transition-[background-color,border-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:border-black/14 hover:bg-black/[0.03] hover:text-black"
                   href="#services"
                 >
                   Dịch vụ
                 </a>
                 <a
-                  className="hero-ghost-pill focus-ring inline-flex min-w-20 items-center justify-center rounded-full border border-transparent bg-transparent px-4 py-3 text-[16px] font-[500] text-white/88 transition-[background-color,border-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:border-white/46 hover:bg-white/[0.06] hover:text-white"
+                  className="hero-ghost-pill focus-ring inline-flex min-w-20 items-center justify-center rounded-full border border-transparent bg-transparent px-4 py-3 text-[16px] font-[500] text-black/84 transition-[background-color,border-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:border-black/14 hover:bg-black/[0.03] hover:text-black"
                   href="#insights"
                 >
                   Thư viện
@@ -201,40 +329,29 @@ export function HomePage({ locale }: HomePageProps) {
 
               <div className="flex items-center justify-end">
                 <a
-                  className="radiant-outline-pill radiant-outline-pill--light focus-ring px-5 py-3 text-[16px]"
+                  className="header-cta-pill focus-ring inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-[#18181b] px-7 py-3 text-[16px] font-[500] text-white"
                   href="#contact"
                 >
-                  <span className="whitespace-nowrap">
-                    Đặt lịch tư vấn miễn phí
-                  </span>
-                  <ArrowUpRight size={20} strokeWidth={2} />
+                  <span className="whitespace-nowrap">Đặt lịch tư vấn</span>
+                  <ArrowUpRight size={18} strokeWidth={2} />
                 </a>
               </div>
             </div>
           </header>
 
-          <div className="flex flex-1 items-center justify-center py-12 sm:py-16 lg:py-20">
-            <div className="mx-auto flex w-full max-w-[1240px] flex-col items-center text-center">
-              <h1 className="max-w-[1200px] text-balance">
-                <span className="block text-[38px] font-[700] text-white drop-shadow-[0_14px_36px_rgba(0,0,0,0.28)] sm:text-[32px] lg:text-[38px]">
-                  Nơi câu chuyện được kể bằng
-                </span>
-                <span className="font-instrument-serif block text-[130px] italic text-white drop-shadow-[0_16px_42px_rgba(0,0,0,0.32)] sm:text-[40px] lg:text-[130px]">
-                  videos &amp; reels
-                </span>
-              </h1>
-
-              <p className="mt-1 max-w-[800px] text-balance text-[14px] font-[500] text-white/80 drop-shadow-[0_8px_24px_rgba(0,0,0,0.28)] sm:text-[16px]">
-                Dịch vụ video viral dành cho Influencer, Creator và Doanh nghiệp
+          <div className="flex flex-1 items-start justify-center pt-10">
+            <div className="relative z-20 mx-auto flex w-full max-w-[920px] flex-col items-center px-4 pt-10 text-center">
+              <p className="text-[clamp(20px,2.8vw,38px)] font-[700] uppercase tracking-[-0.05em] text-black/44">
+                Welcome to
               </p>
-
-              <a
-                className="radiant-outline-pill radiant-outline-pill--light focus-ring mt-4 px-6 py-3 text-[15px]"
-                href="#works"
-              >
-                <span className="whitespace-nowrap">Xem Dự án</span>
-                <ArrowRight size={20} strokeWidth={2.2} />
-              </a>
+              <Image
+                alt="Hoa Linh studio"
+                className="mt-2 h-auto w-[min(80vw,380px)]"
+                height={112}
+                priority
+                src="/logo-hoa-linh-full.svg"
+                width={380}
+              />
             </div>
           </div>
         </div>
@@ -272,68 +389,241 @@ export function HomePage({ locale }: HomePageProps) {
       </section>
 
       <section id="services" className="bg-white text-[#171717]">
-        <div className="mx-auto max-w-[1320px] px-4 pb-24 sm:px-6 lg:px-10">
-          <SectionTitle title="Dịch vụ trọng tâm" />
-          <div className="mt-10 grid gap-5 md:grid-cols-3">
-            {focusServices.map((service) => (
-              <article
-                className="group overflow-hidden rounded-[24px] bg-white shadow-[0_16px_60px_rgba(0,0,0,0.06)]"
-                key={service.title}
-              >
-                <div className="relative aspect-[1.35] overflow-hidden">
-                  <Image
-                    alt={service.title}
-                    className="object-cover transition duration-500 group-hover:scale-[1.03]"
-                    fill
-                    sizes="(min-width: 1024px) 33vw, 100vw"
-                    src={service.image}
-                  />
-                </div>
-                <div className="flex items-center justify-between gap-4 px-5 py-5">
-                  <h3 className="text-[18px] font-[600] text-[#171717]">
-                    {service.title}
-                  </h3>
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-black/10 text-[#171717]">
-                    <ArrowUpRight size={18} strokeWidth={2} />
-                  </span>
-                </div>
-              </article>
-            ))}
+        <div className="pb-24">
+          <div className="mx-auto max-w-[1320px] px-4 sm:px-6 lg:px-10">
+            <SectionTitle title="Dịch vụ trọng tâm" />
+          </div>
+          <div className="relative left-1/2 mt-5 h-[min(40.5vw,630px)] min-h-[260px] w-screen -translate-x-1/2 overflow-hidden">
+            <div className="pointer-events-none absolute inset-y-0 left-0 z-[35] w-24 bg-[linear-gradient(90deg,#ffffff_0%,rgba(255,255,255,0)_100%)] sm:w-40" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 z-[35] w-24 bg-[linear-gradient(270deg,#ffffff_0%,rgba(255,255,255,0)_100%)] sm:w-40" />
+            {focusServices.map((service, index) => {
+              const rawOffset =
+                (index - activeServiceIndex + serviceCount) % serviceCount;
+              const relativeOffset =
+                rawOffset === serviceCount - 1 ? -1 : rawOffset;
+              const isActive = relativeOffset === 0;
+              const isVisibleSide = Math.abs(relativeOffset) === 1;
+
+              const cardWidth = isActive
+                ? "min(72vw, 1120px)"
+                : "min(48vw, 746px)";
+              const translateX =
+                relativeOffset === -1
+                  ? "calc(-50% - min(43vw, 620px))"
+                  : relativeOffset === 1
+                    ? "calc(-50% + min(43vw, 620px))"
+                    : "-50%";
+              const scale =
+                relativeOffset === 0 ? 1 : isVisibleSide ? 0.9 : 0.82;
+              const opacity =
+                relativeOffset === 0 ? 1 : isVisibleSide ? 0.52 : 0;
+
+              return (
+                <button
+                  className={cn(
+                    "service-carousel-card group absolute left-1/2 top-1/2 block aspect-video overflow-hidden rounded-[8px] text-left transition-[transform,width,opacity,box-shadow,filter] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] focus:outline-none md:rounded-[12px] xl:rounded-[24px]",
+                    isActive
+                      ? "service-carousel-card--active z-20"
+                      : "z-10",
+                    !isActive && !isVisibleSide && "pointer-events-none z-0",
+                    isVisibleSide && "cursor-none",
+                  )}
+                  key={service.title}
+                  onMouseEnter={(event) => {
+                    if (!isVisibleSide) {
+                      return;
+                    }
+
+                    const rect = event.currentTarget.getBoundingClientRect();
+                    setServiceCursor({
+                      direction: relativeOffset < 0 ? "left" : "right",
+                      index,
+                      x: event.clientX - rect.left,
+                      y: event.clientY - rect.top,
+                    });
+                  }}
+                  onMouseLeave={() => {
+                    if (isVisibleSide) {
+                      setServiceCursor(null);
+                    }
+                  }}
+                  onMouseMove={(event) => {
+                    if (!isVisibleSide) {
+                      return;
+                    }
+
+                    const rect = event.currentTarget.getBoundingClientRect();
+                    setServiceCursor({
+                      direction: relativeOffset < 0 ? "left" : "right",
+                      index,
+                      x: event.clientX - rect.left,
+                      y: event.clientY - rect.top,
+                    });
+                  }}
+                  onClick={() => {
+                    if (!isActive) {
+                      goToService(index);
+                    }
+                  }}
+                  style={{
+                    opacity,
+                    transform: `translate(${translateX}, -50%) scale(${scale})`,
+                    width: cardWidth,
+                  }}
+                  type="button"
+                >
+                  <div className="absolute inset-0">
+                    <Image
+                      alt={service.title}
+                      className={cn(
+                        "h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                        isActive ? "scale-100 group-hover:scale-[1.035]" : "scale-[1.02]",
+                      )}
+                      fill
+                      sizes="(min-width: 1024px) 72vw, 100vw"
+                      src={service.image}
+                    />
+                    <div
+                      className={cn(
+                        "absolute inset-0 transition-[background-color,opacity] duration-500 ease-out",
+                        isActive
+                          ? "bg-[linear-gradient(180deg,rgba(0,0,0,0.02)_0%,rgba(0,0,0,0.18)_54%,rgba(0,0,0,0.82)_100%)]"
+                          : "bg-[linear-gradient(180deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0.34)_100%)]",
+                      )}
+                    />
+                    {isVisibleSide && serviceCursor?.index === index ? (
+                      <span
+                        className="pointer-events-none absolute z-20 inline-flex h-14 w-14 items-center justify-center rounded-full border border-[#F9B01C]/55 bg-[#F9B01C]/18 text-[#F9B01C] backdrop-blur-md transition-opacity duration-150"
+                        style={{
+                          left: serviceCursor.x,
+                          top: serviceCursor.y,
+                          transform: "translate(-50%, -50%)",
+                        }}
+                      >
+                        {serviceCursor.direction === "left" ? (
+                          <ArrowLeft size={20} strokeWidth={2} />
+                        ) : (
+                          <ArrowRight size={20} strokeWidth={2} />
+                        )}
+                      </span>
+                    ) : null}
+                  </div>
+
+                  <div
+                    className={cn(
+                      "absolute inset-x-0 bottom-0 flex flex-col items-center px-4 pb-4 text-center text-white transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                      isActive ? "group-hover:-translate-y-1" : "",
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                        isActive
+                          ? "text-[11px] font-[600] uppercase tracking-[0.22em] text-white/72 opacity-100"
+                          : "text-[10px] font-[600] uppercase tracking-[0.18em] text-white/0 opacity-0",
+                      )}
+                    >
+                      {service.eyebrow}
+                    </span>
+                    <h3
+                      className={cn(
+                        "service-carousel-title mt-2 w-full px-4 text-balance font-[700] tracking-[-0.04em] text-white transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                        isActive
+                          ? "mx-auto max-w-[980px] text-[30px] sm:text-[40px] lg:text-[42px]"
+                          : "service-carousel-side-title mx-auto max-w-[300px] text-[20px] sm:text-[22px]",
+                      )}
+                    >
+                      {service.title}
+                    </h3>
+                    {isActive ? (
+                      <p className="service-carousel-description mt-3 w-full max-w-[860px] px-4 text-balance text-white/72">
+                        {service.description}
+                      </p>
+                    ) : null}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="mx-auto mt-10 flex max-w-[1320px] justify-center px-4 sm:px-6 lg:px-10">
+              <OutlinePillButton href="#contact" label="Xem thêm" />
           </div>
         </div>
       </section>
 
-      <section id="works" className="bg-white text-[#171717]">
-        <div className="mx-auto max-w-[1440px] px-0 pb-24">
-          <SectionTitle title="Dự án nổi bật" />
-          <div className="mt-10 grid grid-cols-2 gap-px bg-black/10 md:grid-cols-4 lg:grid-cols-6">
-            {featuredProjectImages.map((image, index) => (
+      <section
+        id="works"
+        ref={worksSectionRef}
+        className="relative h-[260vh] bg-white"
+      >
+        <div
+          className="works-depth-scene sticky top-0 h-screen overflow-hidden transition-[background-color,color] duration-500"
+          style={{
+            backgroundColor: `rgba(${Math.round(lerp(255, 10, clamp((worksProgress - 0.08) / 0.16, 0, 1)))}, ${Math.round(
+              lerp(255, 12, clamp((worksProgress - 0.08) / 0.16, 0, 1)),
+            )}, ${Math.round(lerp(255, 16, clamp((worksProgress - 0.08) / 0.16, 0, 1)))}, 1)`,
+          }}
+        >
+          <div className="relative h-full w-full">
+            <div className="absolute inset-0">
+              {worksSceneCards.map((card, index) => {
+                const image = featuredProjectImages[index];
+                const entrance = clamp((worksProgress - 0.08 - index * 0.03) / 0.16, 0, 1);
+                const settle = clamp((worksProgress - 0.28) / 0.18, 0, 1);
+                const fly = clamp((worksProgress - 0.56 - index * 0.02) / 0.24, 0, 1);
+                const startY = 126 + index * 8;
+                const baseY = card.baseY + Math.sin(index * 1.7) * 2.5;
+                const y = lerp(startY, baseY, entrance) + Math.sin(settle * Math.PI * 1.5 + index) * 1.8;
+                const x = lerp(50, card.baseX, entrance);
+                const scale = lerp(0.58, card.baseScale, entrance) * lerp(1, 1.04, settle);
+                const flyScale = lerp(scale, scale + 1.9 + index * 0.16, fly);
+                const flyY = lerp(y, y - 20 - index * 4, fly);
+                const flyX = lerp(x, x + (card.baseX < 50 ? -12 : 12), fly);
+                const opacity = fly > 0.86 ? 1 - (fly - 0.86) / 0.14 : entrance;
+
+                return (
+                  <div
+                    className={cn(
+                      "absolute overflow-hidden rounded-[18px] transition-[opacity] duration-500 sm:rounded-[22px] lg:rounded-[26px]",
+                      card.aspect === "portrait" ? "aspect-[4/5]" : "aspect-square",
+                    )}
+                    key={`${image}-${index}`}
+                    style={{
+                      left: `${flyX}%`,
+                      opacity,
+                      top: `${flyY}%`,
+                      transform: `translate(-50%, -50%) translateZ(${lerp(card.z, 420, fly)}px) scale(${flyScale})`,
+                      width: `${card.width}vw`,
+                    }}
+                  >
+                    <Image
+                      alt={`Featured project ${index + 1}`}
+                      className="h-full w-full object-cover"
+                      fill
+                      sizes="(min-width: 1024px) 24vw, 40vw"
+                      src={image}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="absolute inset-0 flex items-center justify-center">
               <div
-                className={cn(
-                  "relative overflow-hidden bg-white",
-                  index === 0 && "md:col-span-2 md:row-span-2",
-                )}
-                key={image}
+                className="flex flex-col items-center text-center transition-[transform,color,opacity] duration-500"
+                style={{
+                  color:
+                    clamp((worksProgress - 0.08) / 0.16, 0, 1) > 0.5 ? "#f5f5f2" : "#171717",
+                  opacity: lerp(1, 0.82, clamp((worksProgress - 0.6) / 0.22, 0, 1)),
+                  transform: `translateY(${lerp(0, -18, clamp((worksProgress - 0.58) / 0.24, 0, 1))}px)`,
+                }}
               >
-                <div
-                  className={cn(
-                    "relative aspect-square",
-                    index === 0 && "md:aspect-[2/2]",
-                  )}
-                >
-                  <Image
-                    alt={`Featured project ${index + 1}`}
-                    className="object-cover"
-                    fill
-                    sizes="(min-width: 1024px) 20vw, 50vw"
-                    src={image}
-                  />
-                </div>
+                <h2 className="text-[42px] font-[700] tracking-[-0.05em] sm:text-[58px] lg:text-[72px]">
+                  Dự án nổi bật
+                </h2>
               </div>
-            ))}
-          </div>
-          <div className="mt-8 flex justify-center">
-            <OutlinePillButton href="#contact" label="Xem thêm" />
+            </div>
           </div>
         </div>
       </section>
@@ -550,5 +840,31 @@ function SocialPill({ icon }: { icon: React.ReactNode }) {
     <span className="footer-social-pill flex h-10 w-10 items-center justify-center rounded-full bg-white text-black/70 shadow-[0_12px_24px_rgba(0,0,0,0.04)]">
       {icon}
     </span>
+  );
+}
+
+function IntroLoader({ state }: { state: "visible" | "closing" }) {
+  return (
+    <div
+      className={cn(
+        "intro-loader fixed inset-0 z-[120] flex items-center justify-center bg-[#111111]",
+        state === "closing" && "intro-loader--closing",
+      )}
+    >
+      <div className="intro-loader__core">
+        <div className="intro-loader__ring" aria-hidden="true" />
+        <svg
+          aria-hidden="true"
+          className="intro-loader__logo"
+          viewBox="0 0 542 542"
+        >
+          <path
+            className="intro-loader__path"
+            d={introVectorPath}
+            pathLength={1}
+          />
+        </svg>
+      </div>
+    </div>
   );
 }
