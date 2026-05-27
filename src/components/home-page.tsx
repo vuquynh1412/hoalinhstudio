@@ -3,7 +3,7 @@
 import { Instrument_Serif, Montserrat } from "next/font/google";
 import Image from "next/image";
 import type { CSSProperties } from "react";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -16,11 +16,8 @@ import {
   Phone,
 } from "lucide-react";
 
-import {
-  featuredProjectImages,
-  focusServices,
-  insightCards,
-} from "@/content/landing-content";
+import { FeaturedProjectsSection } from "@/components/featured-projects-section";
+import { focusServices, insightCards } from "@/content/landing-content";
 import type { Locale } from "@/i18n/config";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
@@ -28,204 +25,6 @@ import { cn } from "@/lib/utils";
 type HomePageProps = {
   locale: Locale;
 };
-
-const clamp = (value: number, min: number, max: number) =>
-  Math.min(Math.max(value, min), max);
-
-const lerp = (start: number, end: number, progress: number) =>
-  start + (end - start) * progress;
-
-const easeOutCubic = (progress: number) => 1 - Math.pow(1 - progress, 3);
-
-const easeInOutSine = (progress: number) =>
-  -(Math.cos(Math.PI * progress) - 1) / 2;
-
-const subscribeToClientReady = () => () => {};
-
-const worksFloatingCards = [
-  {
-    aspect: "aspect-[3/4]",
-    delay: 0,
-    image: featuredProjectImages[0],
-    left: -4,
-    mouseX: -20,
-    mouseY: 12,
-    startTop: 8,
-    travel: 84,
-    width: "clamp(220px, 18vw, 360px)",
-  },
-  {
-    aspect: "aspect-[9/16]",
-    delay: 0.06,
-    image: featuredProjectImages[3],
-    left: 18,
-    maxOpacity: 0.62,
-    mouseX: -12,
-    mouseY: 10,
-    scaleBias: 0.84,
-    startTop: 44,
-    travel: 66,
-    width: "clamp(112px, 9vw, 164px)",
-  },
-  {
-    aspect: "aspect-[3/4]",
-    delay: 0.03,
-    image: featuredProjectImages[4],
-    left: 42,
-    maxOpacity: 0.48,
-    mouseX: -10,
-    mouseY: -8,
-    scaleBias: 0.88,
-    startTop: -2,
-    travel: 58,
-    width: "clamp(220px, 18vw, 320px)",
-  },
-  {
-    aspect: "aspect-[3/4]",
-    delay: 0.08,
-    image: featuredProjectImages[1],
-    left: 66,
-    maxOpacity: 0.82,
-    mouseX: -8,
-    mouseY: 10,
-    startTop: 18,
-    travel: 72,
-    width: "clamp(180px, 16vw, 290px)",
-  },
-  {
-    aspect: "aspect-square",
-    delay: 0.12,
-    image: featuredProjectImages[5],
-    left: 90,
-    maxOpacity: 0.46,
-    mouseX: 10,
-    mouseY: 8,
-    scaleBias: 0.84,
-    startTop: 34,
-    travel: 54,
-    width: "clamp(100px, 8vw, 146px)",
-  },
-  {
-    aspect: "aspect-[4/3]",
-    delay: 0.02,
-    image: featuredProjectImages[2],
-    left: 2,
-    mouseX: 14,
-    mouseY: 12,
-    startTop: 78,
-    travel: 72,
-    width: "clamp(200px, 17vw, 300px)",
-  },
-  {
-    aspect: "aspect-[9/16]",
-    delay: 0.14,
-    image: featuredProjectImages[0],
-    left: 28,
-    maxOpacity: 0.5,
-    mouseX: 18,
-    mouseY: 10,
-    scaleBias: 0.84,
-    startTop: 98,
-    travel: 58,
-    width: "clamp(108px, 9vw, 156px)",
-  },
-  {
-    aspect: "aspect-[4/3]",
-    delay: 0.01,
-    image: featuredProjectImages[4],
-    left: 50,
-    maxOpacity: 0.86,
-    mouseX: 10,
-    mouseY: -8,
-    startTop: 88,
-    travel: 74,
-    width: "clamp(210px, 18vw, 320px)",
-  },
-  {
-    aspect: "aspect-[3/4]",
-    delay: 0.09,
-    image: featuredProjectImages[5],
-    left: 80,
-    maxOpacity: 0.82,
-    mouseX: 16,
-    mouseY: -10,
-    startTop: 72,
-    travel: 78,
-    width: "clamp(220px, 18vw, 330px)",
-  },
-  {
-    aspect: "aspect-[9/16]",
-    delay: 0.22,
-    image: featuredProjectImages[1],
-    left: 96,
-    maxOpacity: 0.42,
-    mouseX: -18,
-    mouseY: 10,
-    scaleBias: 0.8,
-    startTop: 108,
-    travel: 52,
-    width: "clamp(88px, 7vw, 136px)",
-  },
-  {
-    aspect: "aspect-[16/9]",
-    delay: 0.28,
-    image: featuredProjectImages[2],
-    left: 14,
-    mouseX: -12,
-    mouseY: 10,
-    startTop: 132,
-    travel: 60,
-    width: "clamp(180px, 16vw, 260px)",
-  },
-  {
-    aspect: "aspect-square",
-    delay: 0.36,
-    image: featuredProjectImages[3],
-    left: 62,
-    maxOpacity: 0.5,
-    mouseX: 8,
-    mouseY: 8,
-    scaleBias: 0.86,
-    startTop: 126,
-    travel: 56,
-    width: "clamp(94px, 8vw, 132px)",
-  },
-  {
-    aspect: "aspect-[4/3]",
-    delay: 0.44,
-    image: featuredProjectImages[0],
-    left: 84,
-    mouseX: 12,
-    mouseY: 10,
-    startTop: 138,
-    travel: 68,
-    width: "clamp(190px, 16vw, 280px)",
-  },
-  {
-    aspect: "aspect-[9/16]",
-    delay: 0.52,
-    image: featuredProjectImages[4],
-    left: 40,
-    maxOpacity: 0.46,
-    mouseX: 16,
-    mouseY: 12,
-    scaleBias: 0.82,
-    startTop: 148,
-    travel: 54,
-    width: "clamp(96px, 8vw, 140px)",
-  },
-  {
-    aspect: "aspect-[4/3]",
-    delay: 0.6,
-    image: featuredProjectImages[5],
-    left: 8,
-    mouseX: -8,
-    mouseY: 8,
-    startTop: 164,
-    travel: 66,
-    width: "clamp(200px, 17vw, 280px)",
-  },
-] as const;
 
 const aboutRevealText =
   "Hoa Linh Studio làm việc với khách hàng dựa trên sự rõ ràng và tôn trọng cam kết. Mỗi dự án đều được trao đổi minh bạch ngay từ đầu, phản hồi kịp thời trong quá trình thực hiện và luôn đảm bảo chất lượng ở từng giai đoạn.";
@@ -256,16 +55,7 @@ const featuredInsight = {
 
 export function HomePage({ locale }: HomePageProps) {
   const [introState, setIntroState] = useState<"visible" | "closing" | "hidden">(
-    () => {
-      if (
-        typeof window !== "undefined" &&
-        window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      ) {
-        return "hidden";
-      }
-
-      return "visible";
-    },
+    "visible",
   );
   const [activeServiceIndex, setActiveServiceIndex] = useState(0);
   const [serviceCursor, setServiceCursor] = useState<{
@@ -277,14 +67,6 @@ export function HomePage({ locale }: HomePageProps) {
   const aboutSectionRef = useRef<HTMLElement | null>(null);
   const aboutParagraphRef = useRef<HTMLParagraphElement | null>(null);
   const aboutWordRefs = useRef<Array<HTMLSpanElement | null>>([]);
-  const worksSectionRef = useRef<HTMLElement | null>(null);
-  const isMounted = useSyncExternalStore(
-    subscribeToClientReady,
-    () => true,
-    () => false,
-  );
-  const [worksProgress, setWorksProgress] = useState(0);
-  const [worksMouse, setWorksMouse] = useState({ x: 0, y: 0 });
 
   const serviceCount = focusServices.length;
 
@@ -297,7 +79,13 @@ export function HomePage({ locale }: HomePageProps) {
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches
     ) {
-      return;
+      const hideFrame = window.requestAnimationFrame(() => {
+        setIntroState("hidden");
+      });
+
+      return () => {
+        window.cancelAnimationFrame(hideFrame);
+      };
     }
 
     const closeTimer = window.setTimeout(() => {
@@ -384,52 +172,10 @@ export function HomePage({ locale }: HomePageProps) {
     };
   }, []);
 
-  useEffect(() => {
-    const section = worksSectionRef.current;
-
-    if (!section) {
-      return;
-    }
-
-    let frameId = 0;
-
-    const updateScene = () => {
-      const rect = section.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      const total = Math.max(section.offsetHeight - viewportHeight, 1);
-      const travelled = clamp(-rect.top, 0, total);
-      setWorksProgress(travelled / total);
-    };
-
-    const onScroll = () => {
-      if (frameId) {
-        return;
-      }
-
-      frameId = window.requestAnimationFrame(() => {
-        updateScene();
-        frameId = 0;
-      });
-    };
-
-    updateScene();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-
-    return () => {
-      if (frameId) {
-        window.cancelAnimationFrame(frameId);
-      }
-
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
-  }, []);
-
   return (
     <main
       className={cn(
-        "overflow-x-hidden bg-white font-montserrat",
+        "overflow-x-clip bg-white font-montserrat",
         montserrat.variable,
         instrumentSerif.variable,
       )}
@@ -577,7 +323,7 @@ export function HomePage({ locale }: HomePageProps) {
         </div>
       </section>
 
-      <section id="services" className="bg-white text-[#171717]">
+      <section id="services" className="relative isolate z-0 bg-white text-[#171717]">
         <div className="pb-24">
           <div className="mx-auto max-w-[1320px] px-4 sm:px-6 lg:px-10">
             <SectionTitle title="Dịch vụ trọng tâm" />
@@ -741,114 +487,9 @@ export function HomePage({ locale }: HomePageProps) {
         </div>
       </section>
 
-      <section
-        id="works"
-        ref={worksSectionRef}
-        className="relative h-[152vh] bg-white"
-      >
-        <div
-          className="works-depth-scene sticky top-0 h-screen overflow-visible bg-white"
-          onMouseLeave={() => {
-            setWorksMouse({ x: 0, y: 0 });
-          }}
-          onMouseMove={(event) => {
-            const rect = event.currentTarget.getBoundingClientRect();
-            const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-            const y = ((event.clientY - rect.top) / rect.height) * 2 - 1;
+      <FeaturedProjectsSection />
 
-            setWorksMouse({
-              x: clamp(x, -1, 1),
-              y: clamp(y, -1, 1),
-            });
-          }}
-        >
-          <div className="relative h-full w-full">
-            <div className="absolute inset-0">
-              {worksFloatingCards.map((card, index) => {
-                const reveal = easeOutCubic(clamp((worksProgress - card.delay) / 0.028, 0, 1));
-                const drift = clamp(
-                  (worksProgress - card.delay * 0.28) / 0.9,
-                  0,
-                  1,
-                );
-                const exit = easeInOutSine(
-                  clamp((worksProgress - 0.93 - index * 0.004) / 0.03, 0, 1),
-                );
-                const mouseX = isMounted ? worksMouse.x * card.mouseX : 0;
-                const mouseY = isMounted ? worksMouse.y * card.mouseY : 0;
-                const lift = isMounted
-                  ? Math.sin((drift + card.delay) * Math.PI * 1.1) * 10
-                  : 0;
-                const scaleBias = "scaleBias" in card ? card.scaleBias : 1;
-                const maxOpacity = "maxOpacity" in card ? card.maxOpacity : 0.98;
-                const currentTop = card.startTop - drift * card.travel;
-                const entranceFade = clamp((110 - currentTop) / 10, 0, 1);
-                const viewportFade = clamp((currentTop + 18) / 18, 0, 1);
-                const translateY = isMounted
-                  ? -drift * card.travel - exit * 18
-                  : 0;
-                const scale = isMounted
-                  ? lerp(0.92, 1, reveal) * scaleBias * lerp(1, 0.97, exit)
-                  : 0.92;
-                const opacity =
-                  lerp(0, maxOpacity, reveal) *
-                  entranceFade *
-                  viewportFade *
-                  lerp(1, 0, exit);
-
-                return (
-                  <div
-                    className={cn(
-                      "absolute overflow-hidden transition-[opacity,transform] duration-300 will-change-transform",
-                      card.aspect,
-                    )}
-                    key={`${card.image}-${index}`}
-                    style={{
-                      left: `${card.left}%`,
-                      opacity,
-                      top: `${card.startTop}%`,
-                      transform: `translate3d(${mouseX}px, calc(${translateY}vh + ${mouseY + lift}px), 0) scale(${scale})`,
-                      width: card.width,
-                    }}
-                  >
-                    <Image
-                      alt={`Featured project ${index + 1}`}
-                      className="h-full w-full object-cover"
-                      fill
-                      sizes="(min-width: 1280px) 18vw, (min-width: 768px) 22vw, 34vw"
-                      src={card.image}
-                    />
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="pointer-events-none absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2">
-              <div
-                className="flex flex-col items-center text-center"
-                style={{ color: "#171717" }}
-              >
-                <Link
-                  aria-label="Xem danh sách dự án"
-                  className="pointer-events-auto group inline-flex items-start gap-1 sm:gap-2"
-                  href="/projects"
-                >
-                  <h2 className="text-[42px] font-[700] tracking-[-0.06em] sm:text-[62px] lg:text-[92px]">
-                    <span className="inline-block border-b border-transparent transition-colors duration-300 group-hover:border-current">
-                      Dự án nổi bật
-                    </span>
-                  </h2>
-                  <span className="pt-1 text-[18px] font-[600] tracking-[-0.04em] sm:text-[24px] lg:text-[34px]">
-                    ({worksFloatingCards.length})
-                  </span>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="insights" className="bg-white text-[#171717]">
+      <section id="insights" className="relative isolate z-0 bg-white text-[#171717]">
         <div className="mx-auto max-w-[1320px] px-4 py-24 sm:px-6 lg:px-10">
           <SectionTitle title="Thư viện" />
           <div className="mt-10 flex flex-col gap-6">
