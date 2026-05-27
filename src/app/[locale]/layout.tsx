@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 
 import "@/app/globals.css";
 
+import { MotionScrollProvider } from "@/components/motion-scroll-provider";
 import { localeToOpenGraphLocale, type Locale } from "@/i18n/config";
 import { routing } from "@/i18n/routing";
 import { getLanguageAlternates, getLocalizedUrl } from "@/lib/seo";
@@ -85,7 +86,9 @@ export default async function LocaleLayout({
   return (
     <html lang={locale}>
       <body>
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider>
+          <MotionScrollProvider>{children}</MotionScrollProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );
