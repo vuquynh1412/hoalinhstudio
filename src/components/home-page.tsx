@@ -3,7 +3,7 @@
 import { Instrument_Serif, Montserrat } from "next/font/google";
 import Image from "next/image";
 import type { CSSProperties } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -35,13 +35,196 @@ const clamp = (value: number, min: number, max: number) =>
 const lerp = (start: number, end: number, progress: number) =>
   start + (end - start) * progress;
 
-const worksSceneCards = [
-  { aspect: "portrait", baseX: 12, baseY: 20, baseScale: 1.02, width: 21, z: -240 },
-  { aspect: "portrait", baseX: 26, baseY: 64, baseScale: 0.96, width: 17, z: -140 },
-  { aspect: "square", baseX: 43, baseY: 24, baseScale: 0.86, width: 12, z: -120 },
-  { aspect: "portrait", baseX: 64, baseY: 23, baseScale: 0.72, width: 8.5, z: -90 },
-  { aspect: "square", baseX: 72, baseY: 65, baseScale: 1.02, width: 21, z: -230 },
-  { aspect: "portrait", baseX: 88, baseY: 18, baseScale: 0.96, width: 19, z: -180 },
+const easeOutCubic = (progress: number) => 1 - Math.pow(1 - progress, 3);
+
+const easeInOutSine = (progress: number) =>
+  -(Math.cos(Math.PI * progress) - 1) / 2;
+
+const subscribeToClientReady = () => () => {};
+
+const worksFloatingCards = [
+  {
+    aspect: "aspect-[3/4]",
+    delay: 0,
+    image: featuredProjectImages[0],
+    left: -4,
+    mouseX: -20,
+    mouseY: 12,
+    startTop: 8,
+    travel: 84,
+    width: "clamp(220px, 18vw, 360px)",
+  },
+  {
+    aspect: "aspect-[9/16]",
+    delay: 0.06,
+    image: featuredProjectImages[3],
+    left: 18,
+    maxOpacity: 0.62,
+    mouseX: -12,
+    mouseY: 10,
+    scaleBias: 0.84,
+    startTop: 44,
+    travel: 66,
+    width: "clamp(112px, 9vw, 164px)",
+  },
+  {
+    aspect: "aspect-[3/4]",
+    delay: 0.03,
+    image: featuredProjectImages[4],
+    left: 42,
+    maxOpacity: 0.48,
+    mouseX: -10,
+    mouseY: -8,
+    scaleBias: 0.88,
+    startTop: -2,
+    travel: 58,
+    width: "clamp(220px, 18vw, 320px)",
+  },
+  {
+    aspect: "aspect-[3/4]",
+    delay: 0.08,
+    image: featuredProjectImages[1],
+    left: 66,
+    maxOpacity: 0.82,
+    mouseX: -8,
+    mouseY: 10,
+    startTop: 18,
+    travel: 72,
+    width: "clamp(180px, 16vw, 290px)",
+  },
+  {
+    aspect: "aspect-square",
+    delay: 0.12,
+    image: featuredProjectImages[5],
+    left: 90,
+    maxOpacity: 0.46,
+    mouseX: 10,
+    mouseY: 8,
+    scaleBias: 0.84,
+    startTop: 34,
+    travel: 54,
+    width: "clamp(100px, 8vw, 146px)",
+  },
+  {
+    aspect: "aspect-[4/3]",
+    delay: 0.02,
+    image: featuredProjectImages[2],
+    left: 2,
+    mouseX: 14,
+    mouseY: 12,
+    startTop: 78,
+    travel: 72,
+    width: "clamp(200px, 17vw, 300px)",
+  },
+  {
+    aspect: "aspect-[9/16]",
+    delay: 0.14,
+    image: featuredProjectImages[0],
+    left: 28,
+    maxOpacity: 0.5,
+    mouseX: 18,
+    mouseY: 10,
+    scaleBias: 0.84,
+    startTop: 98,
+    travel: 58,
+    width: "clamp(108px, 9vw, 156px)",
+  },
+  {
+    aspect: "aspect-[4/3]",
+    delay: 0.01,
+    image: featuredProjectImages[4],
+    left: 50,
+    maxOpacity: 0.86,
+    mouseX: 10,
+    mouseY: -8,
+    startTop: 88,
+    travel: 74,
+    width: "clamp(210px, 18vw, 320px)",
+  },
+  {
+    aspect: "aspect-[3/4]",
+    delay: 0.09,
+    image: featuredProjectImages[5],
+    left: 80,
+    maxOpacity: 0.82,
+    mouseX: 16,
+    mouseY: -10,
+    startTop: 72,
+    travel: 78,
+    width: "clamp(220px, 18vw, 330px)",
+  },
+  {
+    aspect: "aspect-[9/16]",
+    delay: 0.22,
+    image: featuredProjectImages[1],
+    left: 96,
+    maxOpacity: 0.42,
+    mouseX: -18,
+    mouseY: 10,
+    scaleBias: 0.8,
+    startTop: 108,
+    travel: 52,
+    width: "clamp(88px, 7vw, 136px)",
+  },
+  {
+    aspect: "aspect-[16/9]",
+    delay: 0.28,
+    image: featuredProjectImages[2],
+    left: 14,
+    mouseX: -12,
+    mouseY: 10,
+    startTop: 132,
+    travel: 60,
+    width: "clamp(180px, 16vw, 260px)",
+  },
+  {
+    aspect: "aspect-square",
+    delay: 0.36,
+    image: featuredProjectImages[3],
+    left: 62,
+    maxOpacity: 0.5,
+    mouseX: 8,
+    mouseY: 8,
+    scaleBias: 0.86,
+    startTop: 126,
+    travel: 56,
+    width: "clamp(94px, 8vw, 132px)",
+  },
+  {
+    aspect: "aspect-[4/3]",
+    delay: 0.44,
+    image: featuredProjectImages[0],
+    left: 84,
+    mouseX: 12,
+    mouseY: 10,
+    startTop: 138,
+    travel: 68,
+    width: "clamp(190px, 16vw, 280px)",
+  },
+  {
+    aspect: "aspect-[9/16]",
+    delay: 0.52,
+    image: featuredProjectImages[4],
+    left: 40,
+    maxOpacity: 0.46,
+    mouseX: 16,
+    mouseY: 12,
+    scaleBias: 0.82,
+    startTop: 148,
+    travel: 54,
+    width: "clamp(96px, 8vw, 140px)",
+  },
+  {
+    aspect: "aspect-[4/3]",
+    delay: 0.6,
+    image: featuredProjectImages[5],
+    left: 8,
+    mouseX: -8,
+    mouseY: 8,
+    startTop: 164,
+    travel: 66,
+    width: "clamp(200px, 17vw, 280px)",
+  },
 ] as const;
 
 const aboutRevealText =
@@ -67,7 +250,7 @@ const featuredInsight = {
   description:
     "Sau giai đoạn tăng trưởng nóng, thị trường sáng tạo đang bước vào quãng tái định nghĩa giá trị. Với thương hiệu, video không còn là lớp trang trí bề mặt mà trở thành công cụ kể chuyện, thuyết phục và định vị ở một độ sâu khó thay thế.",
   image:
-    "https://www.figma.com/api/mcp/asset/6176c7a0-6a85-44a7-9899-51cfd29867df",
+    "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&fm=jpg&q=80&w=1600",
   title: "Tại sao video là vũ khí chiến lược của thương hiệu trong thời đại số",
 } as const;
 
@@ -95,7 +278,13 @@ export function HomePage({ locale }: HomePageProps) {
   const aboutParagraphRef = useRef<HTMLParagraphElement | null>(null);
   const aboutWordRefs = useRef<Array<HTMLSpanElement | null>>([]);
   const worksSectionRef = useRef<HTMLElement | null>(null);
+  const isMounted = useSyncExternalStore(
+    subscribeToClientReady,
+    () => true,
+    () => false,
+  );
   const [worksProgress, setWorksProgress] = useState(0);
+  const [worksMouse, setWorksMouse] = useState({ x: 0, y: 0 });
 
   const serviceCount = focusServices.length;
 
@@ -555,73 +744,104 @@ export function HomePage({ locale }: HomePageProps) {
       <section
         id="works"
         ref={worksSectionRef}
-        className="relative h-[260vh] bg-white"
+        className="relative h-[152vh] bg-white"
       >
         <div
-          className="works-depth-scene sticky top-0 h-screen overflow-hidden transition-[background-color,color] duration-500"
-          style={{
-            backgroundColor: `rgba(${Math.round(lerp(255, 10, clamp((worksProgress - 0.08) / 0.16, 0, 1)))}, ${Math.round(
-              lerp(255, 12, clamp((worksProgress - 0.08) / 0.16, 0, 1)),
-            )}, ${Math.round(lerp(255, 16, clamp((worksProgress - 0.08) / 0.16, 0, 1)))}, 1)`,
+          className="works-depth-scene sticky top-0 h-screen overflow-visible bg-white"
+          onMouseLeave={() => {
+            setWorksMouse({ x: 0, y: 0 });
+          }}
+          onMouseMove={(event) => {
+            const rect = event.currentTarget.getBoundingClientRect();
+            const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+            const y = ((event.clientY - rect.top) / rect.height) * 2 - 1;
+
+            setWorksMouse({
+              x: clamp(x, -1, 1),
+              y: clamp(y, -1, 1),
+            });
           }}
         >
           <div className="relative h-full w-full">
             <div className="absolute inset-0">
-              {worksSceneCards.map((card, index) => {
-                const image = featuredProjectImages[index];
-                const entrance = clamp((worksProgress - 0.08 - index * 0.03) / 0.16, 0, 1);
-                const settle = clamp((worksProgress - 0.28) / 0.18, 0, 1);
-                const fly = clamp((worksProgress - 0.56 - index * 0.02) / 0.24, 0, 1);
-                const startY = 126 + index * 8;
-                const baseY = card.baseY + Math.sin(index * 1.7) * 2.5;
-                const y = lerp(startY, baseY, entrance) + Math.sin(settle * Math.PI * 1.5 + index) * 1.8;
-                const x = lerp(50, card.baseX, entrance);
-                const scale = lerp(0.58, card.baseScale, entrance) * lerp(1, 1.04, settle);
-                const flyScale = lerp(scale, scale + 1.9 + index * 0.16, fly);
-                const flyY = lerp(y, y - 20 - index * 4, fly);
-                const flyX = lerp(x, x + (card.baseX < 50 ? -12 : 12), fly);
-                const opacity = fly > 0.86 ? 1 - (fly - 0.86) / 0.14 : entrance;
+              {worksFloatingCards.map((card, index) => {
+                const reveal = easeOutCubic(clamp((worksProgress - card.delay) / 0.028, 0, 1));
+                const drift = clamp(
+                  (worksProgress - card.delay * 0.28) / 0.9,
+                  0,
+                  1,
+                );
+                const exit = easeInOutSine(
+                  clamp((worksProgress - 0.93 - index * 0.004) / 0.03, 0, 1),
+                );
+                const mouseX = isMounted ? worksMouse.x * card.mouseX : 0;
+                const mouseY = isMounted ? worksMouse.y * card.mouseY : 0;
+                const lift = isMounted
+                  ? Math.sin((drift + card.delay) * Math.PI * 1.1) * 10
+                  : 0;
+                const scaleBias = "scaleBias" in card ? card.scaleBias : 1;
+                const maxOpacity = "maxOpacity" in card ? card.maxOpacity : 0.98;
+                const currentTop = card.startTop - drift * card.travel;
+                const entranceFade = clamp((110 - currentTop) / 10, 0, 1);
+                const viewportFade = clamp((currentTop + 18) / 18, 0, 1);
+                const translateY = isMounted
+                  ? -drift * card.travel - exit * 18
+                  : 0;
+                const scale = isMounted
+                  ? lerp(0.92, 1, reveal) * scaleBias * lerp(1, 0.97, exit)
+                  : 0.92;
+                const opacity =
+                  lerp(0, maxOpacity, reveal) *
+                  entranceFade *
+                  viewportFade *
+                  lerp(1, 0, exit);
 
                 return (
                   <div
                     className={cn(
-                      "absolute overflow-hidden rounded-[18px] transition-[opacity] duration-500 sm:rounded-[22px] lg:rounded-[26px]",
-                      card.aspect === "portrait" ? "aspect-[4/5]" : "aspect-square",
+                      "absolute overflow-hidden transition-[opacity,transform] duration-300 will-change-transform",
+                      card.aspect,
                     )}
-                    key={`${image}-${index}`}
+                    key={`${card.image}-${index}`}
                     style={{
-                      left: `${flyX}%`,
+                      left: `${card.left}%`,
                       opacity,
-                      top: `${flyY}%`,
-                      transform: `translate(-50%, -50%) translateZ(${lerp(card.z, 420, fly)}px) scale(${flyScale})`,
-                      width: `${card.width}vw`,
+                      top: `${card.startTop}%`,
+                      transform: `translate3d(${mouseX}px, calc(${translateY}vh + ${mouseY + lift}px), 0) scale(${scale})`,
+                      width: card.width,
                     }}
                   >
                     <Image
                       alt={`Featured project ${index + 1}`}
                       className="h-full w-full object-cover"
                       fill
-                      sizes="(min-width: 1024px) 24vw, 40vw"
-                      src={image}
+                      sizes="(min-width: 1280px) 18vw, (min-width: 768px) 22vw, 34vw"
+                      src={card.image}
                     />
                   </div>
                 );
               })}
             </div>
 
-            <div className="absolute inset-0 flex items-center justify-center">
+            <div className="pointer-events-none absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2">
               <div
-                className="flex flex-col items-center text-center transition-[transform,color,opacity] duration-500"
-                style={{
-                  color:
-                    clamp((worksProgress - 0.08) / 0.16, 0, 1) > 0.5 ? "#f5f5f2" : "#171717",
-                  opacity: lerp(1, 0.82, clamp((worksProgress - 0.6) / 0.22, 0, 1)),
-                  transform: `translateY(${lerp(0, -18, clamp((worksProgress - 0.58) / 0.24, 0, 1))}px)`,
-                }}
+                className="flex flex-col items-center text-center"
+                style={{ color: "#171717" }}
               >
-                <h2 className="text-[42px] font-[700] tracking-[-0.05em] sm:text-[58px] lg:text-[72px]">
-                  Dự án nổi bật
-                </h2>
+                <Link
+                  aria-label="Xem danh sách dự án"
+                  className="pointer-events-auto group inline-flex items-start gap-1 sm:gap-2"
+                  href="/projects"
+                >
+                  <h2 className="text-[42px] font-[700] tracking-[-0.06em] sm:text-[62px] lg:text-[92px]">
+                    <span className="inline-block border-b border-transparent transition-colors duration-300 group-hover:border-current">
+                      Dự án nổi bật
+                    </span>
+                  </h2>
+                  <span className="pt-1 text-[18px] font-[600] tracking-[-0.04em] sm:text-[24px] lg:text-[34px]">
+                    ({worksFloatingCards.length})
+                  </span>
+                </Link>
               </div>
             </div>
           </div>
@@ -687,23 +907,33 @@ export function HomePage({ locale }: HomePageProps) {
 
       <section id="contact" className="bg-white text-[#171717]">
         <div className="mx-auto max-w-[1320px] px-4 py-24 sm:px-6 lg:px-10">
-          <div className="flex flex-col items-center text-center">
-            <h2 className="max-w-[980px] text-[32px] font-[700] uppercase text-[#27272a] sm:text-[54px] lg:text-[54px]">
-              Biến tầm nhìn
-              <br />
-              thành thước phim đắt giá
-            </h2>
-            <p className="mt-4 max-w-[680px] text-[16px] text-black/55">
-              Một quy trình sản xuất trọn gói, nơi mỗi chi tiết đều phục vụ cho
-              giá trị thương hiệu.
-            </p>
-            <a
-              className="radiant-outline-pill mt-8 px-6 py-4 text-[16px] font-[600]"
-              href="mailto:hello@hoalinh.vn"
-            >
-              <span>Liên hệ ngay</span>
-              <ArrowUpRight size={18} />
-            </a>
+          <div className="relative overflow-hidden rounded-[24px] bg-[#eef3fb] sm:rounded-[28px]">
+            <div className="absolute inset-0">
+              <Image
+                alt="Hoa Linh Studio CTA background"
+                className="object-cover object-center"
+                fill
+                priority={false}
+                sizes="100vw"
+                src="/cta-banner.jpg"
+              />
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.16)_0%,rgba(255,255,255,0.04)_32%,rgba(255,255,255,0)_100%)]" />
+            </div>
+
+            <div className="relative flex min-h-[280px] flex-col items-center justify-start px-4 pt-[30px] text-center sm:min-h-[360px] sm:px-6 lg:min-h-[420px] lg:px-10">
+              <h2 className="max-w-[980px] text-[32px] font-[700] uppercase text-[#27272a] sm:text-[54px] lg:text-[54px]">
+                Biến tầm nhìn
+                <br />
+                thành thước phim đắt giá
+              </h2>
+              <a
+                className="radiant-outline-pill mt-8 px-6 py-4 text-[16px] font-[600]"
+                href="mailto:hello@hoalinh.vn"
+              >
+                <span>Liên hệ ngay</span>
+                <ArrowUpRight size={18} />
+              </a>
+            </div>
           </div>
 
           <footer className="mt-20 border-t border-black/10 pt-12">
