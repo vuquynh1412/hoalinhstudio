@@ -17,7 +17,10 @@ import {
 } from "lucide-react";
 
 import { FeaturedProjectsSection } from "@/components/featured-projects-section";
-import { focusServices, insightCards } from "@/content/landing-content";
+import {
+  focusServices,
+  insightCards,
+} from "@/content/landing-content";
 import type { Locale } from "@/i18n/config";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
@@ -44,14 +47,6 @@ const instrumentSerif = Instrument_Serif({
   style: ["italic"],
   weight: "400",
 });
-
-const featuredInsight = {
-  description:
-    "Sau giai đoạn tăng trưởng nóng, thị trường sáng tạo đang bước vào quãng tái định nghĩa giá trị. Với thương hiệu, video không còn là lớp trang trí bề mặt mà trở thành công cụ kể chuyện, thuyết phục và định vị ở một độ sâu khó thay thế.",
-  image:
-    "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&fm=jpg&q=80&w=1600",
-  title: "Tại sao video là vũ khí chiến lược của thương hiệu trong thời đại số",
-} as const;
 
 export function HomePage({ locale }: HomePageProps) {
   const [introState, setIntroState] = useState<"visible" | "closing" | "hidden">(
@@ -213,9 +208,9 @@ export function HomePage({ locale }: HomePageProps) {
           className="pointer-events-none absolute inset-x-0 bottom-0 z-[25] h-[160px] bg-[linear-gradient(180deg,rgba(255,255,255,0)_0%,rgba(255,255,255,0.72)_58%,#ffffff_100%)]"
         />
 
-        <div className="hero-screen relative z-30 flex w-full flex-col px-4 py-4">
+        <div className="hero-screen relative z-30 flex w-full flex-col px-4 py-4 sm:px-5 sm:py-5">
           <header className="relative z-40 mx-auto w-full max-w-[1440px]">
-            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+            <div className="flex items-center justify-between gap-3 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:gap-4">
               <nav
                 aria-label="Primary"
                 className="hidden items-center justify-start gap-1 text-[16px] font-[500] text-black lg:flex"
@@ -248,23 +243,24 @@ export function HomePage({ locale }: HomePageProps) {
 
               <Link
                 aria-label="Hoa Linh Studio home"
-                className="mx-auto rounded-md"
+                className="shrink-0 rounded-md lg:mx-auto"
                 href="/"
                 locale={locale}
               >
                 <Image
                   alt="Hoa Linh Studio logo"
-                  className="h-11 w-auto object-contain"
+                  className="h-8 max-w-[122px] w-auto object-contain sm:h-10 sm:max-w-[150px] lg:h-11 lg:max-w-none"
                   height={44}
                   priority
                   src="/logo-hoa-linh-full.svg"
+                  style={{ width: "auto" }}
                   width={149}
                 />
               </Link>
 
-              <div className="flex items-center justify-end">
+              <div className="flex items-center justify-end lg:min-w-0">
                 <a
-                  className="header-cta-pill focus-ring inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-[#18181b] px-7 py-3 text-[16px] font-[500] text-white"
+                  className="header-cta-pill focus-ring inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#18181b] px-4 py-2.5 text-[14px] font-[500] text-white sm:min-h-12 sm:px-6 sm:py-3 sm:text-[15px] lg:gap-3 lg:px-7 lg:text-[16px]"
                   href="#contact"
                 >
                   <span className="whitespace-nowrap">Đặt lịch tư vấn</span>
@@ -274,14 +270,14 @@ export function HomePage({ locale }: HomePageProps) {
             </div>
           </header>
 
-          <div className="flex flex-1 items-start justify-center pt-10">
-            <div className="relative z-20 mx-auto flex w-full max-w-[920px] flex-col items-center px-4 pt-10 text-center">
-              <p className="text-[clamp(20px,2.8vw,38px)] font-[700] uppercase tracking-[-0.05em] text-black/44">
+          <div className="flex flex-1 items-start justify-center pb-10 pt-10 sm:pb-14 sm:pt-12 lg:pt-10">
+            <div className="relative z-20 mx-auto flex w-full max-w-[920px] flex-col items-center px-4 pt-14 text-center sm:pt-18 lg:pt-10">
+              <p className="text-[clamp(16px,5vw,38px)] font-[700] uppercase tracking-[-0.05em] text-black/44">
                 Welcome to
               </p>
               <Image
                 alt="Hoa Linh studio"
-                className="mt-2 h-auto w-[min(80vw,380px)]"
+                className="mt-2 h-auto w-[min(86vw,380px)] sm:w-[min(70vw,420px)]"
                 height={112}
                 priority
                 src="/logo-hoa-linh-full.svg"
@@ -293,13 +289,27 @@ export function HomePage({ locale }: HomePageProps) {
       </section>
 
       <section
-        className="relative flex min-h-screen items-center justify-center bg-white text-[#27272a]"
+        className="relative isolate flex min-h-[72svh] items-center justify-center overflow-hidden bg-white text-[#27272a] md:min-h-[78svh] lg:min-h-screen"
         id="about"
         ref={aboutSectionRef}
       >
-        <div className="mx-auto w-full max-w-[1200px] px-4 py-25 sm:px-6 lg:px-10">
+        <div className="pointer-events-none absolute inset-0">
+          <Image
+            alt=""
+            aria-hidden="true"
+            className="object-cover object-center opacity-100"
+            fill
+            sizes="100vw"
+            src="/section-bg.jpg"
+          />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.04)_0%,rgba(255,255,255,0.12)_58%,rgba(255,255,255,0.18)_100%)]" />
+          <div className="absolute inset-x-0 top-0 h-[160px] bg-[linear-gradient(180deg,#ffffff_0%,rgba(255,255,255,0.56)_52%,rgba(255,255,255,0)_100%)]" />
+          <div className="absolute inset-x-0 bottom-0 h-[160px] bg-[linear-gradient(180deg,rgba(255,255,255,0)_0%,rgba(255,255,255,0.56)_48%,#ffffff_100%)]" />
+        </div>
+
+        <div className="relative z-10 mx-auto w-full max-w-[1200px] px-4 py-16 sm:px-6 sm:py-20 lg:px-10 lg:py-25">
           <p
-            className="mx-auto max-w-[1200px] text-center text-[14px] font-[700] leading-[1.32] tracking-[-0.04em] text-[#27272a] sm:text-[18px] md:text-[24px] lg:text-[31px] xl:text-[36px]"
+            className="mx-auto max-w-[1200px] text-center text-[16px] font-[700] leading-[1.4] tracking-[-0.03em] text-[#27272a] sm:text-[20px] md:text-[24px] lg:text-[31px] xl:text-[36px]"
             ref={aboutParagraphRef}
           >
             {aboutRevealText.split(" ").map((word, index) => (
@@ -323,14 +333,64 @@ export function HomePage({ locale }: HomePageProps) {
         </div>
       </section>
 
-      <section id="services" className="relative isolate z-0 bg-white text-[#171717]">
-        <div className="pb-24">
+      <section
+        id="services"
+        className="relative isolate z-0 overflow-hidden bg-white text-[#171717]"
+      >
+        <div className="pointer-events-none absolute inset-0">
+          <Image
+            alt=""
+            aria-hidden="true"
+            className="object-cover object-center opacity-100"
+            fill
+            sizes="100vw"
+            src="/section-bg.jpg"
+          />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05)_0%,rgba(255,255,255,0.14)_58%,rgba(255,255,255,0.2)_100%)]" />
+          <div className="absolute inset-x-0 top-0 h-[160px] bg-[linear-gradient(180deg,#ffffff_0%,rgba(255,255,255,0.56)_52%,rgba(255,255,255,0)_100%)]" />
+          <div className="absolute inset-x-0 bottom-0 h-[160px] bg-[linear-gradient(180deg,rgba(255,255,255,0)_0%,rgba(255,255,255,0.56)_48%,#ffffff_100%)]" />
+        </div>
+
+        <div className="relative z-10 pb-16 sm:pb-20 lg:pb-24">
           <div className="mx-auto max-w-[1320px] px-4 sm:px-6 lg:px-10">
             <SectionTitle title="Dịch vụ trọng tâm" />
           </div>
-          <div className="relative left-1/2 mt-5 h-[min(40.5vw,630px)] min-h-[260px] w-screen -translate-x-1/2 overflow-hidden">
-            <div className="pointer-events-none absolute inset-y-0 left-0 z-[35] w-24 bg-[linear-gradient(90deg,#ffffff_0%,rgba(255,255,255,0)_100%)] sm:w-40" />
-            <div className="pointer-events-none absolute inset-y-0 right-0 z-[35] w-24 bg-[linear-gradient(270deg,#ffffff_0%,rgba(255,255,255,0)_100%)] sm:w-40" />
+          <div className="mt-6 lg:hidden">
+            <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 sm:px-6">
+              {focusServices.map((service) => (
+                <article
+                  className="w-[84vw] max-w-[420px] shrink-0 snap-center overflow-hidden rounded-[24px] bg-white/86 shadow-[0_20px_60px_rgba(0,0,0,0.08)] backdrop-blur-sm"
+                  key={`${service.eyebrow}-${service.title}`}
+                >
+                  <div className="relative aspect-[4/3] overflow-hidden">
+                    <Image
+                      alt={service.title}
+                      className="object-cover"
+                      fill
+                      sizes="(min-width: 640px) 420px, 84vw"
+                      src={service.image}
+                    />
+                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.08)_0%,rgba(0,0,0,0.18)_48%,rgba(0,0,0,0.76)_100%)]" />
+                    <div className="absolute inset-x-0 bottom-0 px-5 pb-5 pt-10 text-white">
+                      <span className="text-[11px] font-[600] uppercase tracking-[0.2em] text-white/72">
+                        {service.eyebrow}
+                      </span>
+                      <h3 className="mt-2 text-[24px] font-[700] leading-[1.1] tracking-[-0.04em]">
+                        {service.title}
+                      </h3>
+                    </div>
+                  </div>
+                  <div className="px-5 py-5">
+                    <p className="text-[14px] leading-[1.5] text-black/68">
+                      {service.description}
+                    </p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+
+          <div className="relative left-1/2 mt-6 hidden h-[560px] w-screen -translate-x-1/2 overflow-hidden lg:block xl:h-[620px]">
             {focusServices.map((service, index) => {
               const rawOffset =
                 (index - activeServiceIndex + serviceCount) % serviceCount;
@@ -340,18 +400,18 @@ export function HomePage({ locale }: HomePageProps) {
               const isVisibleSide = Math.abs(relativeOffset) === 1;
 
               const cardWidth = isActive
-                ? "min(72vw, 1120px)"
-                : "min(48vw, 746px)";
+                ? "min(62vw, 920px)"
+                : "min(32vw, 460px)";
               const translateX =
                 relativeOffset === -1
-                  ? "calc(-50% - min(43vw, 620px))"
+                  ? "calc(-50% - min(30vw, 360px))"
                   : relativeOffset === 1
-                    ? "calc(-50% + min(43vw, 620px))"
+                    ? "calc(-50% + min(30vw, 360px))"
                     : "-50%";
               const scale =
-                relativeOffset === 0 ? 1 : isVisibleSide ? 0.9 : 0.82;
+                relativeOffset === 0 ? 1 : isVisibleSide ? 0.92 : 0.82;
               const opacity =
-                relativeOffset === 0 ? 1 : isVisibleSide ? 0.52 : 0;
+                relativeOffset === 0 ? 1 : isVisibleSide ? 0.62 : 0;
 
               return (
                 <button
@@ -428,7 +488,7 @@ export function HomePage({ locale }: HomePageProps) {
                     />
                     {isVisibleSide && serviceCursor?.index === index ? (
                       <span
-                        className="pointer-events-none absolute z-20 inline-flex h-14 w-14 items-center justify-center rounded-full border border-[#F9B01C]/55 bg-[#F9B01C]/18 text-[#F9B01C] backdrop-blur-md transition-opacity duration-150"
+                        className="pointer-events-none absolute z-20 inline-flex h-14 w-14 items-center justify-center rounded-full bg-[#111111] text-white shadow-[0_18px_42px_rgba(0,0,0,0.22)] transition-opacity duration-150"
                         style={{
                           left: serviceCursor.x,
                           top: serviceCursor.y,
@@ -436,9 +496,9 @@ export function HomePage({ locale }: HomePageProps) {
                         }}
                       >
                         {serviceCursor.direction === "left" ? (
-                          <ArrowLeft size={20} strokeWidth={2} />
+                          <ArrowLeft size={20} strokeWidth={2.2} />
                         ) : (
-                          <ArrowRight size={20} strokeWidth={2} />
+                          <ArrowRight size={20} strokeWidth={2.2} />
                         )}
                       </span>
                     ) : null}
@@ -455,7 +515,7 @@ export function HomePage({ locale }: HomePageProps) {
                         "transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
                         isActive
                           ? "text-[11px] font-[600] uppercase tracking-[0.22em] text-white/72 opacity-100"
-                          : "text-[10px] font-[600] uppercase tracking-[0.18em] text-white/0 opacity-0",
+                          : "text-[10px] font-[600] uppercase tracking-[0.18em] text-white/72 opacity-100",
                       )}
                     >
                       {service.eyebrow}
@@ -481,7 +541,7 @@ export function HomePage({ locale }: HomePageProps) {
             })}
           </div>
 
-          <div className="mx-auto mt-10 flex max-w-[1320px] justify-center px-4 sm:px-6 lg:px-10">
+          <div className="mx-auto mt-8 flex max-w-[1320px] justify-center px-4 sm:px-6 lg:px-10">
               <OutlinePillButton href="#contact" label="Xem thêm" />
           </div>
         </div>
@@ -490,56 +550,55 @@ export function HomePage({ locale }: HomePageProps) {
       <FeaturedProjectsSection />
 
       <section id="insights" className="relative isolate z-0 bg-white text-[#171717]">
-        <div className="mx-auto max-w-[1320px] px-4 py-24 sm:px-6 lg:px-10">
+        <div className="mx-auto max-w-[1320px] px-4 py-16 sm:px-6 sm:py-20 lg:px-10 lg:py-24">
           <SectionTitle title="Thư viện" />
-          <div className="mt-10 flex flex-col gap-6">
-            <article className="relative overflow-hidden rounded-[24px]">
-              <div className="relative aspect-[16/9] w-full md:aspect-[16/7]">
-                <Image
-                  alt={featuredInsight.title}
-                  className="object-cover"
-                  fill
-                  sizes="100vw"
-                  src={featuredInsight.image}
-                />
-              </div>
-              <div className="left-6 top-6 max-w-[420px] rounded-[20px] bg-white/85 p-6 backdrop-blur md:absolute">
-                <h3 className="text-[26px] font-[700] text-black">
-                  {featuredInsight.title}
-                </h3>
-                <p className="mt-4 text-[15px] text-black/55">
-                  {featuredInsight.description}
-                </p>
-                <a
-                  className="radiant-outline-pill mt-6 px-5 py-3 text-[15px]"
-                  href="#contact"
-                >
-                  <span>Xem thêm</span>
-                  <ArrowRight size={18} />
-                </a>
-              </div>
-            </article>
-
-            <div className="grid gap-4 lg:grid-cols-4">
+          <div className="mt-4 flex flex-col gap-4">
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {insightCards.map((card) => (
-                <article className="flex flex-col gap-3" key={card.title}>
-                  <div className="relative aspect-[1.58] overflow-hidden rounded-[16px]">
-                    <Image
-                      alt={card.title}
-                      className="object-cover"
-                      fill
-                      sizes="(min-width: 1024px) 25vw, 100vw"
-                      src={card.image}
-                    />
-                  </div>
-                  <h3 className="text-[18px] font-[700] text-black">
-                    {card.title}
-                  </h3>
+                <article key={card.title}>
+                  <Link
+                    className="group block rounded-[18px] outline-none focus-visible:ring-2 focus-visible:ring-black/30 focus-visible:ring-offset-4"
+                    href={card.href}
+                  >
+                    <div className="relative aspect-video overflow-hidden rounded-[18px] bg-[#efefef]">
+                      <Image
+                        alt={card.title}
+                        className="object-cover transition-transform duration-300 ease-out group-hover:scale-[1.03] group-focus-visible:scale-[1.03]"
+                        fill
+                        sizes="(min-width: 1280px) 33vw, (min-width: 640px) 50vw, 100vw"
+                        src={card.image}
+                      />
+                      <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10 group-focus-visible:bg-black/10" />
+                      <div className="absolute bottom-3 right-3 rounded-[6px] bg-black/82 px-1.5 py-1 text-[12px] font-[700] leading-none tracking-[0.01em] text-white">
+                        {card.duration}
+                      </div>
+                    </div>
+
+                    <div className="mt-3 flex items-start gap-3">
+                      <div
+                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[12px] font-[700] tracking-[0.08em] text-white"
+                        style={{ background: card.avatarColor }}
+                      >
+                        {card.avatarLabel}
+                      </div>
+                      <div className="min-w-0 pr-2">
+                        <h3 className="line-clamp-2 text-[17px] font-[600] leading-[1.35] tracking-[-0.02em] text-[#0f0f0f] sm:text-[18px]">
+                          {card.title}
+                        </h3>
+                        <p className="mt-1 text-[13px] leading-[1.4] text-[#606060] sm:text-[14px]">
+                          {card.channel}
+                        </p>
+                        <p className="text-[13px] leading-[1.4] text-[#606060] sm:text-[14px]">
+                          {card.views} lượt xem • {card.publishedAt}
+                        </p>
+                      </div>
+                    </div>
+                  </Link>
                 </article>
               ))}
             </div>
 
-            <div className="flex justify-center pt-2">
+            <div className="flex justify-center">
               <OutlinePillButton href="#contact" label="Xem thêm" />
             </div>
           </div>
@@ -547,47 +606,48 @@ export function HomePage({ locale }: HomePageProps) {
       </section>
 
       <section id="contact" className="bg-white text-[#171717]">
-        <div className="mx-auto max-w-[1320px] px-4 py-24 sm:px-6 lg:px-10">
-          <div className="relative overflow-hidden rounded-[24px] bg-[#eef3fb] sm:rounded-[28px]">
-            <div className="absolute inset-0">
-              <Image
-                alt="Hoa Linh Studio CTA background"
-                className="object-cover object-center"
-                fill
-                priority={false}
-                sizes="100vw"
-                src="/cta-banner.jpg"
-              />
-              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.16)_0%,rgba(255,255,255,0.04)_32%,rgba(255,255,255,0)_100%)]" />
-            </div>
-
-            <div className="relative flex min-h-[280px] flex-col items-center justify-start px-4 pt-[30px] text-center sm:min-h-[360px] sm:px-6 lg:min-h-[420px] lg:px-10">
-              <h2 className="max-w-[980px] text-[32px] font-[700] uppercase text-[#27272a] sm:text-[54px] lg:text-[54px]">
-                Biến tầm nhìn
-                <br />
-                thành thước phim đắt giá
-              </h2>
-              <a
-                className="radiant-outline-pill mt-8 px-6 py-4 text-[16px] font-[600]"
-                href="mailto:hello@hoalinh.vn"
-              >
-                <span>Liên hệ ngay</span>
-                <ArrowUpRight size={18} />
-              </a>
-            </div>
+        <div className="relative overflow-hidden bg-[#eef3fb]">
+          <div className="absolute inset-0">
+            <Image
+              alt="Hoa Linh Studio CTA background"
+              className="object-cover object-center"
+              fill
+              priority={false}
+              sizes="100vw"
+              src="/cta-banner.jpg"
+            />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.16)_0%,rgba(255,255,255,0.04)_32%,rgba(255,255,255,0)_100%)]" />
           </div>
 
-          <footer className="mt-20 border-t border-black/10 pt-12">
+          <div className="relative flex min-h-[280px] flex-col items-center justify-start px-4 pt-[30px] text-center sm:min-h-[360px] sm:px-6 lg:min-h-[420px] lg:px-10">
+            <h2 className="max-w-[980px] text-[28px] font-[700] uppercase text-[#27272a] sm:text-[42px] lg:text-[54px]">
+              Biến tầm nhìn
+              <br />
+              thành thước phim đắt giá
+            </h2>
+            <a
+              className="radiant-outline-pill mt-8 px-6 py-4 text-[16px] font-[600]"
+              href="mailto:hello@hoalinh.vn"
+            >
+              <span>Liên hệ ngay</span>
+              <ArrowUpRight size={18} />
+            </a>
+          </div>
+        </div>
+
+        <div className="mx-auto max-w-[1320px] px-4 pb-16 pt-10 sm:px-6 sm:pb-20 lg:px-10 lg:pb-24 lg:pt-12">
+          <footer className="border-t border-black/10 pt-10 sm:pt-12">
             <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.15fr_0.8fr_0.8fr_1.45fr] lg:items-start">
               <div className="flex flex-col items-start gap-5">
                 <Image
                   alt="Hoa Linh Studio"
-                  className="h-[70px] w-auto object-contain"
+                  className="h-[56px] w-auto object-contain sm:h-[64px] lg:h-[70px]"
                   height={70}
                   src="/logo-hoa-linh-full.svg"
+                  style={{ width: "auto" }}
                   width={320}
                 />
-                <div className="flex items-center gap-2 text-black/60">
+                <div className="flex flex-wrap items-center gap-2 text-black/60">
                   <SocialPill icon={<MessageCircle size={18} />} />
                   <SocialPill icon={<Camera size={18} />} />
                   <SocialPill icon={<CirclePlay size={18} />} />
@@ -628,7 +688,7 @@ export function HomePage({ locale }: HomePageProps) {
                     text="123 abc, bcd, Hồ Chí Minh"
                   />
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-col gap-2 sm:flex-row">
                   <input
                     className="min-w-0 flex-1 rounded-full border border-black/10 bg-white px-4 py-3 text-[14px] text-black placeholder:text-black/40 transition-colors duration-200 ease-in-out focus:border-[#111111] focus:outline-none"
                     placeholder="Nhập email để nhận tư vấn"
@@ -652,7 +712,7 @@ export function HomePage({ locale }: HomePageProps) {
 
 function SectionTitle({ title }: { title: string }) {
   return (
-    <h2 className="text-center text-[34px] font-[700] text-[#171717] sm:text-[40px]">
+    <h2 className="text-center text-[30px] font-[700] tracking-[-0.04em] text-[#171717] sm:text-[36px] lg:text-[40px]">
       {title}
     </h2>
   );
