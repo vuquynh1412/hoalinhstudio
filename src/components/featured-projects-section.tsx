@@ -132,8 +132,7 @@ const featuredProjectRows: FeaturedProjectRow[] = [
     ],
   },
   {
-    className:
-      "pt-[60vh] pb-[50vh] md:pt-[80vh] lg:py-0",
+    className: "pt-[60vh] pb-[50vh] md:pt-[80vh] lg:py-0",
     id: "deep",
     cards: [
       {
@@ -342,7 +341,8 @@ export function FeaturedProjectsSection() {
       });
 
       const canUseMouseDrift =
-        window.matchMedia("(pointer: fine)").matches && ScrollTrigger.isTouch === 0;
+        window.matchMedia("(pointer: fine)").matches &&
+        ScrollTrigger.isTouch === 0;
 
       if (!canUseMouseDrift) {
         gsap.set(mouseLayers, { clearProps: "x,y" });
@@ -393,8 +393,20 @@ export function FeaturedProjectsSection() {
         applyMouse();
       };
       const onPointerMove = (event: PointerEvent) => {
-        mouse.target.x = gsap.utils.mapRange(0, window.innerWidth, 1, -1, event.clientX);
-        mouse.target.y = gsap.utils.mapRange(0, window.innerHeight, 1, -1, event.clientY);
+        mouse.target.x = gsap.utils.mapRange(
+          0,
+          window.innerWidth,
+          1,
+          -1,
+          event.clientX,
+        );
+        mouse.target.y = gsap.utils.mapRange(
+          0,
+          window.innerHeight,
+          1,
+          -1,
+          event.clientY,
+        );
       };
 
       root.addEventListener("pointermove", onPointerMove, { passive: true });
@@ -440,38 +452,25 @@ export function FeaturedProjectsSection() {
     <section
       id="works"
       ref={rootRef}
-      className="relative isolate z-0 flex flex-col bg-white pb-[28vh] text-[#171717]"
+      className="relative isolate z-0 flex flex-col bg-white pb-[28vh] text-[#FFFFFF]"
     >
       <div
         ref={titleLayerRef}
-        className="featured-work-title-layer pointer-events-none sticky top-0 z-30 -mb-[100vh] flex h-screen items-center justify-center px-4"
+        className="featured-work-title-layer pointer-events-none sticky top-0 z-30 -mb-[100vh] flex h-screen items-center justify-center px-4 text-[#E4E4E7] mix-blend-exclusion"
       >
         <Link
           aria-label="Xem danh sách dự án"
           className="featured-work-title-link pointer-events-auto group focus-ring"
           href="/projects"
         >
-          <span className="relative inline-grid place-items-center text-[#171717]">
-            <span className="col-start-1 row-start-1 inline-flex items-start gap-2">
-              <h2 className="text-center text-[42px] font-[700] leading-none tracking-normal sm:text-[62px] lg:text-[92px]">
-                <span className="featured-work-title-link__text inline-block">
-                  Dự án nổi bật
-                </span>
-              </h2>
-              <span className="pt-1 text-[18px] font-[600] leading-none tracking-normal sm:text-[24px] lg:text-[34px]">
-                ({featuredProjectCount})
-              </span>
-            </span>
-            <span
-              aria-hidden="true"
-              className="pointer-events-none col-start-1 row-start-1 inline-flex items-start gap-2 text-white mix-blend-difference"
-            >
-              <span className="text-center text-[42px] font-[700] leading-none tracking-normal sm:text-[62px] lg:text-[92px]">
+          <span className="relative inline-flex items-start gap-2">
+            <h2 className="text-center text-[42px] font-[700] leading-none tracking-normal sm:text-[62px] lg:text-[92px]">
+              <span className="featured-work-title-link__text inline-block">
                 Dự án nổi bật
               </span>
-              <span className="pt-1 text-[18px] font-[600] leading-none tracking-normal sm:text-[24px] lg:text-[34px]">
-                ({featuredProjectCount})
-              </span>
+            </h2>
+            <span className="pt-1 text-[18px] font-[600] leading-none tracking-normal sm:text-[24px] lg:text-[34px]">
+              ({featuredProjectCount})
             </span>
           </span>
         </Link>
@@ -495,10 +494,7 @@ export function FeaturedProjectsSection() {
               );
 
               return (
-                <div
-                  className={card.wrapperClassName}
-                  key={card.id}
-                >
+                <div className={card.wrapperClassName} key={card.id}>
                   <div
                     className={cn(
                       "featured-work-card relative h-0 w-full pt-[130%]",
