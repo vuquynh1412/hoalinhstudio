@@ -3,8 +3,6 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
-import "@/app/globals.css";
-
 import { MotionScrollProvider } from "@/components/motion-scroll-provider";
 import { localeToOpenGraphLocale, type Locale } from "@/i18n/config";
 import { routing } from "@/i18n/routing";

@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 
-import { useLenisScrollSync } from "@/lib/animations";
+import { useLenisScrollSync, useScrollReveal } from "@/lib/animations";
 
 type MotionScrollProviderProps = {
   children: ReactNode;
@@ -13,6 +13,7 @@ export function MotionScrollProvider({ children }: MotionScrollProviderProps) {
     anchors: true,
     mode: "desktop",
   });
+  useScrollReveal();
 
   return children;
 }

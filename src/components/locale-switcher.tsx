@@ -16,7 +16,7 @@ export function LocaleSwitcher({ currentLocale }: LocaleSwitcherProps) {
             "focus-ring rounded-md px-3 py-2 text-sm font-semibold transition",
             locale === currentLocale
               ? "bg-primary text-primary-foreground"
-              : "text-foreground/70 hover:bg-muted hover:text-foreground",
+              : "locale-switcher-link text-foreground/70",
           )}
           href="/"
           key={locale}

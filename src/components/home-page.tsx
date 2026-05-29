@@ -17,10 +17,7 @@ import {
 } from "lucide-react";
 
 import { FeaturedProjectsSection } from "@/components/featured-projects-section";
-import {
-  focusServices,
-  insightCards,
-} from "@/content/landing-content";
+import { focusServices, insightCards } from "@/content/landing-content";
 import type { Locale } from "@/i18n/config";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
@@ -49,16 +46,15 @@ const instrumentSerif = Instrument_Serif({
 });
 
 export function HomePage({ locale }: HomePageProps) {
-  const [introState, setIntroState] = useState<"visible" | "closing" | "hidden">(
-    "visible",
-  );
+  const [introState, setIntroState] = useState<
+    "visible" | "closing" | "hidden"
+  >("visible");
   const [activeServiceIndex, setActiveServiceIndex] = useState(0);
-  const [serviceCursor, setServiceCursor] = useState<{
-    direction: "left" | "right";
-    index: number;
-    x: number;
-    y: number;
-  } | null>(null);
+  const [isServiceAutoplayPaused, setIsServiceAutoplayPaused] = useState(false);
+  const [isDesktopServices, setIsDesktopServices] = useState(false);
+  const [serviceHoverSide, setServiceHoverSide] = useState<
+    "left" | "right" | null
+  >(null);
   const aboutSectionRef = useRef<HTMLElement | null>(null);
   const aboutParagraphRef = useRef<HTMLParagraphElement | null>(null);
   const aboutWordRefs = useRef<Array<HTMLSpanElement | null>>([]);
@@ -68,6 +64,52 @@ export function HomePage({ locale }: HomePageProps) {
   const goToService = (index: number) => {
     setActiveServiceIndex((index + serviceCount) % serviceCount);
   };
+
+  const stepService = (direction: "next" | "prev") => {
+    setActiveServiceIndex((currentIndex) =>
+      direction === "next"
+        ? (currentIndex + 1) % serviceCount
+        : (currentIndex - 1 + serviceCount) % serviceCount,
+    );
+  };
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(min-width: 1024px)");
+
+    const syncServicesBreakpoint = () => {
+      setIsDesktopServices(mediaQuery.matches);
+    };
+
+    syncServicesBreakpoint();
+    mediaQuery.addEventListener("change", syncServicesBreakpoint);
+
+    return () => {
+      mediaQuery.removeEventListener("change", syncServicesBreakpoint);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isServiceAutoplayPaused) {
+      return;
+    }
+
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      return;
+    }
+
+    const timer = window.setInterval(() => {
+      setActiveServiceIndex(
+        (currentIndex) => (currentIndex + 1) % serviceCount,
+      );
+    }, 5000);
+
+    return () => {
+      window.clearInterval(timer);
+    };
+  }, [isServiceAutoplayPaused, serviceCount]);
 
   useEffect(() => {
     if (
@@ -189,19 +231,19 @@ export function HomePage({ locale }: HomePageProps) {
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 z-[5] bg-white opacity-50"
+          className="pointer-events-none absolute inset-0 z-[5] bg-white/18"
         />
         <Image
           alt="Hoa Linh Studio hero background"
-          className="z-10 object-cover object-center"
+          className="pointer-events-none absolute inset-0 z-[8] h-full w-full object-cover object-center"
           fill
           priority
           sizes="100vw"
-          src="/hero-banner-fullscreen.png"
+          src="/hero.png"
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 z-20 bg-[linear-gradient(180deg,rgba(255,255,255,0.03)_0%,rgba(255,255,255,0.05)_42%,rgba(248,247,243,0.26)_100%)]"
+          className="pointer-events-none absolute inset-0 z-10 bg-[linear-gradient(180deg,rgba(255,255,255,0.02)_0%,rgba(255,255,255,0.06)_42%,rgba(248,247,243,0.22)_100%)]"
         />
         <div
           aria-hidden="true"
@@ -216,25 +258,25 @@ export function HomePage({ locale }: HomePageProps) {
                 className="hidden items-center justify-start gap-1 text-[16px] font-[500] text-black lg:flex"
               >
                 <a
-                  className="hero-ghost-pill focus-ring inline-flex min-w-20 items-center justify-center rounded-full border border-transparent bg-transparent px-4 py-3 text-[16px] font-[500] text-black/84 transition-[background-color,border-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:border-black/14 hover:bg-black/[0.03] hover:text-black"
+                  className="hero-ghost-pill focus-ring inline-flex min-w-20 items-center justify-center rounded-full border border-transparent bg-transparent px-4 py-3 text-[16px] font-[500] text-black/84 transition-[background-color,border-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]"
                   href="#about"
                 >
                   Giới thiệu
                 </a>
                 <a
-                  className="hero-ghost-pill focus-ring inline-flex min-w-20 items-center justify-center rounded-full border border-transparent bg-transparent px-4 py-3 text-[16px] font-[500] text-black/84 transition-[background-color,border-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:border-black/14 hover:bg-black/[0.03] hover:text-black"
+                  className="hero-ghost-pill focus-ring inline-flex min-w-20 items-center justify-center rounded-full border border-transparent bg-transparent px-4 py-3 text-[16px] font-[500] text-black/84 transition-[background-color,border-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]"
                   href="#works"
                 >
                   Dự án
                 </a>
                 <a
-                  className="hero-ghost-pill focus-ring inline-flex min-w-20 items-center justify-center rounded-full border border-transparent bg-transparent px-4 py-3 text-[16px] font-[500] text-black/84 transition-[background-color,border-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:border-black/14 hover:bg-black/[0.03] hover:text-black"
+                  className="hero-ghost-pill focus-ring inline-flex min-w-20 items-center justify-center rounded-full border border-transparent bg-transparent px-4 py-3 text-[16px] font-[500] text-black/84 transition-[background-color,border-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]"
                   href="#services"
                 >
                   Dịch vụ
                 </a>
                 <a
-                  className="hero-ghost-pill focus-ring inline-flex min-w-20 items-center justify-center rounded-full border border-transparent bg-transparent px-4 py-3 text-[16px] font-[500] text-black/84 transition-[background-color,border-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:border-black/14 hover:bg-black/[0.03] hover:text-black"
+                  className="hero-ghost-pill focus-ring inline-flex min-w-20 items-center justify-center rounded-full border border-transparent bg-transparent px-4 py-3 text-[16px] font-[500] text-black/84 transition-[background-color,border-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]"
                   href="#insights"
                 >
                   Thư viện
@@ -260,7 +302,7 @@ export function HomePage({ locale }: HomePageProps) {
 
               <div className="flex items-center justify-end lg:min-w-0">
                 <a
-                  className="header-cta-pill focus-ring inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#18181b] px-4 py-2.5 text-[14px] font-[500] text-white sm:min-h-12 sm:px-6 sm:py-3 sm:text-[15px] lg:gap-3 lg:px-7 lg:text-[16px]"
+                  className="header-cta-pill fill-black-pill focus-ring inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#18181b] px-4 py-2.5 text-[14px] font-[500] text-white sm:min-h-12 sm:px-6 sm:py-3 sm:text-[15px] lg:gap-3 lg:px-7 lg:text-[16px]"
                   href="#contact"
                 >
                   <span className="whitespace-nowrap">Đặt lịch tư vấn</span>
@@ -289,7 +331,7 @@ export function HomePage({ locale }: HomePageProps) {
       </section>
 
       <section
-        className="relative isolate flex min-h-[72svh] items-center justify-center overflow-hidden bg-white text-[#27272a] md:min-h-[78svh] lg:min-h-screen"
+        className="relative isolate flex items-center justify-center overflow-hidden bg-white px-4 py-[120px] text-[#27272a] sm:px-6 sm:py-24 lg:min-h-screen lg:px-0 lg:py-0"
         id="about"
         ref={aboutSectionRef}
       >
@@ -297,19 +339,18 @@ export function HomePage({ locale }: HomePageProps) {
           <Image
             alt=""
             aria-hidden="true"
-            className="object-cover object-center opacity-100"
-            fill
-            sizes="100vw"
-            src="/section-bg.jpg"
+            className="absolute bottom-0 left-1/2 h-auto max-w-none w-[200%] -translate-x-1/2 sm:left-0 sm:w-full sm:translate-x-0"
+            height={400}
+            priority
+            src="/floor.svg"
+            width={1600}
           />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.04)_0%,rgba(255,255,255,0.12)_58%,rgba(255,255,255,0.18)_100%)]" />
           <div className="absolute inset-x-0 top-0 h-[160px] bg-[linear-gradient(180deg,#ffffff_0%,rgba(255,255,255,0.56)_52%,rgba(255,255,255,0)_100%)]" />
-          <div className="absolute inset-x-0 bottom-0 h-[160px] bg-[linear-gradient(180deg,rgba(255,255,255,0)_0%,rgba(255,255,255,0.56)_48%,#ffffff_100%)]" />
         </div>
 
-        <div className="relative z-10 mx-auto w-full max-w-[1200px] px-4 py-16 sm:px-6 sm:py-20 lg:px-10 lg:py-25">
+        <div className="relative z-10 mx-auto w-full max-w-[1200px] lg:px-10 lg:py-25">
           <p
-            className="mx-auto max-w-[1200px] text-center text-[16px] font-[700] leading-[1.4] tracking-[-0.03em] text-[#27272a] sm:text-[20px] md:text-[24px] lg:text-[31px] xl:text-[36px]"
+            className="mx-auto max-w-[1200px] text-center text-[20px] font-[700] leading-[1.4] tracking-[-0.03em] text-[#27272a] md:text-[24px] lg:text-[31px] xl:text-[36px]"
             ref={aboutParagraphRef}
           >
             {aboutRevealText.split(" ").map((word, index) => (
@@ -335,240 +376,263 @@ export function HomePage({ locale }: HomePageProps) {
 
       <section
         id="services"
-        className="relative isolate z-0 overflow-hidden bg-white text-[#171717]"
+        className="relative isolate z-0 overflow-hidden bg-white text-[#171717] lg:min-h-screen"
       >
         <div className="pointer-events-none absolute inset-0">
-          <Image
-            alt=""
-            aria-hidden="true"
-            className="object-cover object-center opacity-100"
-            fill
-            sizes="100vw"
-            src="/section-bg.jpg"
-          />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05)_0%,rgba(255,255,255,0.14)_58%,rgba(255,255,255,0.2)_100%)]" />
+          <div className="absolute inset-x-0 bottom-0 h-1/2 overflow-hidden">
+            <Image
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-x-0 bottom-0 h-auto w-full"
+              height={400}
+              src="/floor.svg"
+              width={1600}
+            />
+          </div>
           <div className="absolute inset-x-0 top-0 h-[160px] bg-[linear-gradient(180deg,#ffffff_0%,rgba(255,255,255,0.56)_52%,rgba(255,255,255,0)_100%)]" />
-          <div className="absolute inset-x-0 bottom-0 h-[160px] bg-[linear-gradient(180deg,rgba(255,255,255,0)_0%,rgba(255,255,255,0.56)_48%,#ffffff_100%)]" />
         </div>
 
-        <div className="relative z-10 pb-16 sm:pb-20 lg:pb-24">
-          <div className="mx-auto max-w-[1320px] px-4 sm:px-6 lg:px-10">
+        <div className="relative z-10 flex flex-col gap-4 pb-16 sm:gap-5 sm:pb-20 lg:min-h-screen lg:justify-center lg:gap-6 lg:pb-24">
+          <div
+            className="mx-auto w-full max-w-[1320px] px-4 sm:px-6 lg:px-10"
+            data-scroll-reveal="enter"
+          >
             <SectionTitle title="Dịch vụ trọng tâm" />
           </div>
-          <div className="mt-6 lg:hidden">
-            <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 sm:px-6">
-              {focusServices.map((service) => (
-                <article
-                  className="w-[84vw] max-w-[420px] shrink-0 snap-center overflow-hidden rounded-[24px] bg-white/86 shadow-[0_20px_60px_rgba(0,0,0,0.08)] backdrop-blur-sm"
-                  key={`${service.eyebrow}-${service.title}`}
-                >
-                  <div className="relative aspect-[4/3] overflow-hidden">
-                    <Image
-                      alt={service.title}
-                      className="object-cover"
-                      fill
-                      sizes="(min-width: 640px) 420px, 84vw"
-                      src={service.image}
-                    />
-                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.08)_0%,rgba(0,0,0,0.18)_48%,rgba(0,0,0,0.76)_100%)]" />
-                    <div className="absolute inset-x-0 bottom-0 px-5 pb-5 pt-10 text-white">
-                      <span className="text-[11px] font-[600] uppercase tracking-[0.2em] text-white/72">
+          <div
+            className="relative mx-auto w-full overflow-hidden"
+            data-scroll-reveal="enter"
+            onMouseEnter={() => {
+              if (isDesktopServices) {
+                setIsServiceAutoplayPaused(true);
+              }
+            }}
+            onMouseLeave={() => {
+              setIsServiceAutoplayPaused(false);
+              setServiceHoverSide(null);
+            }}
+          >
+            <div className="relative h-[211px] w-full sm:h-[360px] lg:left-1/2 lg:h-[480px] lg:w-screen lg:-translate-x-1/2 xl:h-[560px]">
+              {focusServices.map((service, index) => {
+                const rawOffset =
+                  (index - activeServiceIndex + serviceCount) % serviceCount;
+                const relativeOffset =
+                  rawOffset === serviceCount - 1 ? -1 : rawOffset;
+                const isActive = relativeOffset === 0;
+                const isVisibleSide = Math.abs(relativeOffset) === 1;
+
+                const cardWidth = isActive
+                  ? isDesktopServices
+                    ? "min(64vw, 1120px)"
+                    : "min(calc(100% - 32px), 640px)"
+                  : isDesktopServices
+                    ? "min(42.666vw, 746px)"
+                    : "min(calc(100% - 32px), 640px)";
+                const translateX = !isDesktopServices
+                  ? "-50%"
+                  : relativeOffset === -1
+                    ? "calc(-50% - min(33.5vw, 586px))"
+                    : relativeOffset === 1
+                      ? "calc(-50% + min(33.5vw, 586px))"
+                      : "-50%";
+                const scale = !isDesktopServices
+                  ? 1
+                  : relativeOffset === 0
+                    ? 1
+                    : isVisibleSide
+                      ? 1
+                      : 0.82;
+                const opacity = !isDesktopServices
+                  ? isActive
+                    ? 1
+                    : 0
+                  : relativeOffset === 0
+                    ? 1
+                    : isVisibleSide
+                      ? 0.58
+                      : 0;
+
+                return (
+                  <button
+                    className={cn(
+                      "service-carousel-card group absolute left-1/2 top-1/2 block overflow-hidden rounded-[8px] text-left transition-[transform,width,opacity,box-shadow,filter] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] focus:outline-none max-sm:rounded-[8px] sm:rounded-[10px] lg:rounded-[16px]",
+                      isActive
+                        ? "service-carousel-card--active z-20 aspect-video"
+                        : "z-10 aspect-video",
+                      !isActive &&
+                        (!isVisibleSide || !isDesktopServices) &&
+                        "pointer-events-none z-0",
+                      isVisibleSide && isDesktopServices && "cursor-pointer",
+                    )}
+                    key={service.title}
+                    onClick={() => {
+                      if (!isActive) {
+                        goToService(index);
+                      }
+                    }}
+                    style={{
+                      opacity,
+                      transform: `translate(${translateX}, -50%) scale(${scale})`,
+                      width: cardWidth,
+                    }}
+                    type="button"
+                  >
+                    <div className="absolute inset-0">
+                      <Image
+                        alt={service.title}
+                        className={cn(
+                          "service-card-media h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                          isActive ? "scale-100" : "scale-[1.02]",
+                        )}
+                        fill
+                        sizes="(min-width: 1024px) 84vw, 100vw"
+                        src={service.image}
+                        unoptimized
+                      />
+                      <div
+                        className={cn(
+                          "absolute inset-0 transition-[background-color,opacity] duration-500 ease-out",
+                          isActive
+                            ? "bg-[linear-gradient(180deg,rgba(0,0,0,0.02)_0%,rgba(0,0,0,0.18)_54%,rgba(0,0,0,0.82)_100%)]"
+                            : "bg-[linear-gradient(180deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0.34)_100%)]",
+                        )}
+                      />
+                    </div>
+
+                    <div
+                      className={cn(
+                        "service-card-body absolute inset-x-0 bottom-0 flex flex-col items-center px-4 pb-4 text-center text-white transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] sm:px-2 sm:pb-2 lg:px-4 lg:pb-4",
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                          isActive
+                            ? "text-[12px] font-[600] uppercase tracking-[0.12em] text-white/78 opacity-100 md:text-[14px]"
+                            : "text-[12px] font-[600] uppercase tracking-[0.12em] text-white/78 opacity-100 md:text-[14px]",
+                        )}
+                      >
                         {service.eyebrow}
                       </span>
-                      <h3 className="mt-2 text-[24px] font-[700] leading-[1.1] tracking-[-0.04em]">
+                      <h3
+                        className={cn(
+                          "service-carousel-title mt-2 w-full text-balance font-[700] tracking-[-0.04em] text-white transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                          isActive
+                            ? "max-w-[82%] text-[16px] leading-[1.08] sm:max-w-[76%] sm:text-[18px] lg:max-w-[680px] lg:text-[24px]"
+                            : "service-carousel-side-title max-w-[72%] text-[16px] leading-[1.08] sm:text-[18px] lg:text-[24px]",
+                        )}
+                      >
                         {service.title}
                       </h3>
+                      {isActive ? (
+                        <p className="service-carousel-description mt-3 w-full max-w-[700px] text-balance text-[14px] text-white/72 sm:text-[15px]">
+                          {service.description}
+                        </p>
+                      ) : null}
                     </div>
-                  </div>
-                  <div className="px-5 py-5">
-                    <p className="text-[14px] leading-[1.5] text-black/68">
-                      {service.description}
-                    </p>
-                  </div>
-                </article>
-              ))}
+                  </button>
+                );
+              })}
+
+              <div className="pointer-events-none absolute inset-y-0 left-0 z-20 hidden w-10 bg-[linear-gradient(90deg,#ffffff_0%,rgba(255,255,255,0)_100%)] lg:block lg:w-24" />
+              <div className="pointer-events-none absolute inset-y-0 right-0 z-20 hidden w-10 bg-[linear-gradient(270deg,#ffffff_0%,rgba(255,255,255,0)_100%)] lg:block lg:w-24" />
+
+              <button
+                aria-label="Previous service"
+                className="service-nav-hit-area absolute top-1/2 left-0 z-30 hidden h-[min(36vw,630px)] w-[calc((100vw-min(64vw,1120px))/2)] -translate-y-1/2 cursor-w-resize lg:block"
+                onClick={() => stepService("prev")}
+                onMouseEnter={() => {
+                  setIsServiceAutoplayPaused(true);
+                  setServiceHoverSide("left");
+                }}
+                onMouseLeave={() => setServiceHoverSide(null)}
+                type="button"
+              >
+                <span
+                  className={cn(
+                    "service-nav-indicator pointer-events-none absolute top-1/2 left-8 inline-flex h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full bg-[#111111] text-white shadow-[0_18px_42px_rgba(0,0,0,0.22)]",
+                    serviceHoverSide === "left" ? "opacity-100" : "opacity-0",
+                  )}
+                >
+                  <ArrowLeft size={20} strokeWidth={2.2} />
+                </span>
+              </button>
+              <button
+                aria-label="Next service"
+                className="service-nav-hit-area absolute top-1/2 right-0 z-30 hidden h-[min(36vw,630px)] w-[calc((100vw-min(64vw,1120px))/2)] -translate-y-1/2 cursor-e-resize lg:block"
+                onClick={() => stepService("next")}
+                onMouseEnter={() => {
+                  setIsServiceAutoplayPaused(true);
+                  setServiceHoverSide("right");
+                }}
+                onMouseLeave={() => setServiceHoverSide(null)}
+                type="button"
+              >
+                <span
+                  className={cn(
+                    "service-nav-indicator pointer-events-none absolute top-1/2 right-8 inline-flex h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full bg-[#111111] text-white shadow-[0_18px_42px_rgba(0,0,0,0.22)]",
+                    serviceHoverSide === "right" ? "opacity-100" : "opacity-0",
+                  )}
+                >
+                  <ArrowRight size={20} strokeWidth={2.2} />
+                </span>
+              </button>
+
+              <button
+                aria-label="Previous service"
+                className="service-nav-button fill-black-pill absolute left-2 top-1/2 z-30 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-[#111111] text-white sm:left-4 sm:h-11 sm:w-11 lg:hidden"
+                onClick={() => stepService("prev")}
+                type="button"
+              >
+                <ArrowLeft size={18} strokeWidth={2.2} />
+              </button>
+              <button
+                aria-label="Next service"
+                className="service-nav-button fill-black-pill absolute right-2 top-1/2 z-30 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-[#111111] text-white sm:right-4 sm:h-11 sm:w-11 lg:hidden"
+                onClick={() => stepService("next")}
+                type="button"
+              >
+                <ArrowRight size={18} strokeWidth={2.2} />
+              </button>
             </div>
           </div>
 
-          <div className="relative left-1/2 mt-6 hidden h-[560px] w-screen -translate-x-1/2 overflow-hidden lg:block xl:h-[620px]">
-            {focusServices.map((service, index) => {
-              const rawOffset =
-                (index - activeServiceIndex + serviceCount) % serviceCount;
-              const relativeOffset =
-                rawOffset === serviceCount - 1 ? -1 : rawOffset;
-              const isActive = relativeOffset === 0;
-              const isVisibleSide = Math.abs(relativeOffset) === 1;
-
-              const cardWidth = isActive
-                ? "min(62vw, 920px)"
-                : "min(32vw, 460px)";
-              const translateX =
-                relativeOffset === -1
-                  ? "calc(-50% - min(30vw, 360px))"
-                  : relativeOffset === 1
-                    ? "calc(-50% + min(30vw, 360px))"
-                    : "-50%";
-              const scale =
-                relativeOffset === 0 ? 1 : isVisibleSide ? 0.92 : 0.82;
-              const opacity =
-                relativeOffset === 0 ? 1 : isVisibleSide ? 0.62 : 0;
-
-              return (
-                <button
-                  className={cn(
-                    "service-carousel-card group absolute left-1/2 top-1/2 block aspect-video overflow-hidden rounded-[8px] text-left transition-[transform,width,opacity,box-shadow,filter] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] focus:outline-none md:rounded-[12px] xl:rounded-[24px]",
-                    isActive
-                      ? "service-carousel-card--active z-20"
-                      : "z-10",
-                    !isActive && !isVisibleSide && "pointer-events-none z-0",
-                    isVisibleSide && "cursor-none",
-                  )}
-                  key={service.title}
-                  onMouseEnter={(event) => {
-                    if (!isVisibleSide) {
-                      return;
-                    }
-
-                    const rect = event.currentTarget.getBoundingClientRect();
-                    setServiceCursor({
-                      direction: relativeOffset < 0 ? "left" : "right",
-                      index,
-                      x: event.clientX - rect.left,
-                      y: event.clientY - rect.top,
-                    });
-                  }}
-                  onMouseLeave={() => {
-                    if (isVisibleSide) {
-                      setServiceCursor(null);
-                    }
-                  }}
-                  onMouseMove={(event) => {
-                    if (!isVisibleSide) {
-                      return;
-                    }
-
-                    const rect = event.currentTarget.getBoundingClientRect();
-                    setServiceCursor({
-                      direction: relativeOffset < 0 ? "left" : "right",
-                      index,
-                      x: event.clientX - rect.left,
-                      y: event.clientY - rect.top,
-                    });
-                  }}
-                  onClick={() => {
-                    if (!isActive) {
-                      goToService(index);
-                    }
-                  }}
-                  style={{
-                    opacity,
-                    transform: `translate(${translateX}, -50%) scale(${scale})`,
-                    width: cardWidth,
-                  }}
-                  type="button"
-                >
-                  <div className="absolute inset-0">
-                    <Image
-                      alt={service.title}
-                      className={cn(
-                        "h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]",
-                        isActive ? "scale-100 group-hover:scale-[1.035]" : "scale-[1.02]",
-                      )}
-                      fill
-                      sizes="(min-width: 1024px) 72vw, 100vw"
-                      src={service.image}
-                    />
-                    <div
-                      className={cn(
-                        "absolute inset-0 transition-[background-color,opacity] duration-500 ease-out",
-                        isActive
-                          ? "bg-[linear-gradient(180deg,rgba(0,0,0,0.02)_0%,rgba(0,0,0,0.18)_54%,rgba(0,0,0,0.82)_100%)]"
-                          : "bg-[linear-gradient(180deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0.34)_100%)]",
-                      )}
-                    />
-                    {isVisibleSide && serviceCursor?.index === index ? (
-                      <span
-                        className="pointer-events-none absolute z-20 inline-flex h-14 w-14 items-center justify-center rounded-full bg-[#111111] text-white shadow-[0_18px_42px_rgba(0,0,0,0.22)] transition-opacity duration-150"
-                        style={{
-                          left: serviceCursor.x,
-                          top: serviceCursor.y,
-                          transform: "translate(-50%, -50%)",
-                        }}
-                      >
-                        {serviceCursor.direction === "left" ? (
-                          <ArrowLeft size={20} strokeWidth={2.2} />
-                        ) : (
-                          <ArrowRight size={20} strokeWidth={2.2} />
-                        )}
-                      </span>
-                    ) : null}
-                  </div>
-
-                  <div
-                    className={cn(
-                      "absolute inset-x-0 bottom-0 flex flex-col items-center px-4 pb-4 text-center text-white transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
-                      isActive ? "group-hover:-translate-y-1" : "",
-                    )}
-                  >
-                    <span
-                      className={cn(
-                        "transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
-                        isActive
-                          ? "text-[11px] font-[600] uppercase tracking-[0.22em] text-white/72 opacity-100"
-                          : "text-[10px] font-[600] uppercase tracking-[0.18em] text-white/72 opacity-100",
-                      )}
-                    >
-                      {service.eyebrow}
-                    </span>
-                    <h3
-                      className={cn(
-                        "service-carousel-title mt-2 w-full px-4 text-balance font-[700] tracking-[-0.04em] text-white transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
-                        isActive
-                          ? "mx-auto max-w-[980px] text-[30px] sm:text-[40px] lg:text-[42px]"
-                          : "service-carousel-side-title mx-auto max-w-[300px] text-[20px] sm:text-[22px]",
-                      )}
-                    >
-                      {service.title}
-                    </h3>
-                    {isActive ? (
-                      <p className="service-carousel-description mt-3 w-full max-w-[860px] px-4 text-balance text-white/72">
-                        {service.description}
-                      </p>
-                    ) : null}
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="mx-auto mt-8 flex max-w-[1320px] justify-center px-4 sm:px-6 lg:px-10">
-              <OutlinePillButton href="#contact" label="Xem thêm" />
+          <div
+            className="mx-auto max-w-[1320px] px-4 text-center sm:px-6 lg:px-10"
+            data-scroll-reveal="enter"
+          >
+            <OutlinePillButton href="#contact" label="Xem thêm" />
           </div>
         </div>
       </section>
 
       <FeaturedProjectsSection />
 
-      <section id="insights" className="relative isolate z-0 bg-white text-[#171717]">
+      <section
+        id="insights"
+        className="relative isolate z-0 bg-white text-[#171717]"
+      >
         <div className="mx-auto max-w-[1320px] px-4 py-16 sm:px-6 sm:py-20 lg:px-10 lg:py-24">
-          <SectionTitle title="Thư viện" />
-          <div className="mt-4 flex flex-col gap-4">
+          <div data-scroll-reveal="enter">
+            <SectionTitle title="Thư viện" />
+          </div>
+          <div className="mt-6 flex flex-col gap-4 sm:gap-6">
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {insightCards.map((card) => (
-                <article key={card.title}>
+                <article data-scroll-reveal="enter" key={card.title}>
                   <Link
-                    className="group block rounded-[18px] outline-none focus-visible:ring-2 focus-visible:ring-black/30 focus-visible:ring-offset-4"
+                    className="insight-card group block rounded-[18px] outline-none focus-visible:ring-2 focus-visible:ring-black/30 focus-visible:ring-offset-4"
                     href={card.href}
                   >
                     <div className="relative aspect-video overflow-hidden rounded-[18px] bg-[#efefef]">
                       <Image
                         alt={card.title}
-                        className="object-cover transition-transform duration-300 ease-out group-hover:scale-[1.03] group-focus-visible:scale-[1.03]"
+                        className="insight-card-media object-cover transition-transform duration-300 ease-out group-focus-visible:scale-[1.03]"
                         fill
                         sizes="(min-width: 1280px) 33vw, (min-width: 640px) 50vw, 100vw"
                         src={card.image}
                       />
-                      <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10 group-focus-visible:bg-black/10" />
+                      <div className="insight-card-overlay absolute inset-0 bg-black/0 transition-colors duration-300 group-focus-visible:bg-black/10" />
                       <div className="absolute bottom-3 right-3 rounded-[6px] bg-black/82 px-1.5 py-1 text-[12px] font-[700] leading-none tracking-[0.01em] text-white">
                         {card.duration}
                       </div>
@@ -598,7 +662,10 @@ export function HomePage({ locale }: HomePageProps) {
               ))}
             </div>
 
-            <div className="flex justify-center">
+            <div
+              className="flex justify-center pt-2 sm:pt-3"
+              data-scroll-reveal="enter"
+            >
               <OutlinePillButton href="#contact" label="Xem thêm" />
             </div>
           </div>
@@ -619,14 +686,15 @@ export function HomePage({ locale }: HomePageProps) {
             <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.16)_0%,rgba(255,255,255,0.04)_32%,rgba(255,255,255,0)_100%)]" />
           </div>
 
-          <div className="relative flex min-h-[280px] flex-col items-center justify-start px-4 pt-[30px] text-center sm:min-h-[360px] sm:px-6 lg:min-h-[420px] lg:px-10">
-            <h2 className="max-w-[980px] text-[28px] font-[700] uppercase text-[#27272a] sm:text-[42px] lg:text-[54px]">
-              Biến tầm nhìn
-              <br />
-              thành thước phim đắt giá
+          <div
+            className="relative flex min-h-[280px] flex-col items-center justify-start px-4 pt-[56px] text-center sm:min-h-[360px] sm:px-6 lg:min-h-[420px] lg:px-10"
+            data-scroll-reveal="enter"
+          >
+            <h2 className="text-[24px] font-[700] uppercase text-[#27272a] sm:text-[42px] lg:text-[48px]">
+              Trực quan hoá ý tưởng của bạn
             </h2>
             <a
-              className="radiant-outline-pill mt-8 px-6 py-4 text-[16px] font-[600]"
+              className="fill-black-pill focus-ring mt-4 inline-flex items-center gap-2 rounded-full bg-[#18181b] px-6 py-4 text-[16px] font-[600] text-white"
               href="mailto:hello@hoalinh.vn"
             >
               <span>Liên hệ ngay</span>
@@ -635,10 +703,10 @@ export function HomePage({ locale }: HomePageProps) {
           </div>
         </div>
 
-        <div className="mx-auto max-w-[1320px] px-4 pb-16 pt-10 sm:px-6 sm:pb-20 lg:px-10 lg:pb-24 lg:pt-12">
-          <footer className="border-t border-black/10 pt-10 sm:pt-12">
+        <div className="mx-auto max-w-[1320px] px-4 pt-6 pb-16 sm:px-6 md:pt-8 sm:pb-20 xl:pt-10 lg:px-10 lg:pb-24">
+          <footer data-scroll-reveal="skip">
             <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.15fr_0.8fr_0.8fr_1.45fr] lg:items-start">
-              <div className="flex flex-col items-start gap-5">
+              <div className="flex flex-col items-center gap-5 text-center md:col-span-2 lg:col-span-1 lg:items-start lg:text-left">
                 <Image
                   alt="Hoa Linh Studio"
                   className="h-[56px] w-auto object-contain sm:h-[64px] lg:h-[70px]"
@@ -647,7 +715,7 @@ export function HomePage({ locale }: HomePageProps) {
                   style={{ width: "auto" }}
                   width={320}
                 />
-                <div className="flex flex-wrap items-center gap-2 text-black/60">
+                <div className="flex flex-wrap items-center justify-center gap-2 text-black/60 lg:justify-start">
                   <SocialPill icon={<MessageCircle size={18} />} />
                   <SocialPill icon={<Camera size={18} />} />
                   <SocialPill icon={<CirclePlay size={18} />} />
@@ -678,11 +746,14 @@ export function HomePage({ locale }: HomePageProps) {
                 title="Dịch vụ"
               />
 
-              <div className="space-y-5">
+              <div className="space-y-5 md:col-span-2 lg:col-span-1">
                 <FooterHeading>Liên hệ</FooterHeading>
-                <div className="space-y-3">
+                <div className="space-y-3 md:flex md:flex-wrap md:items-center md:gap-x-8 md:gap-y-3 md:space-y-0 lg:block lg:space-y-3">
                   <FooterContact icon={<Phone size={18} />} text="0123456789" />
-                  <FooterContact icon={<Mail size={18} />} text="abc@gmail.com" />
+                  <FooterContact
+                    icon={<Mail size={18} />}
+                    text="abc@gmail.com"
+                  />
                   <FooterContact
                     icon={<MapPin size={18} />}
                     text="123 abc, bcd, Hồ Chí Minh"
@@ -690,12 +761,12 @@ export function HomePage({ locale }: HomePageProps) {
                 </div>
                 <div className="flex flex-col gap-2 sm:flex-row">
                   <input
-                    className="min-w-0 flex-1 rounded-full border border-black/10 bg-white px-4 py-3 text-[14px] text-black placeholder:text-black/40 transition-colors duration-200 ease-in-out focus:border-[#111111] focus:outline-none"
+                    className="h-14 w-full min-w-0 rounded-full border border-black/10 bg-white px-4 text-[14px] text-black placeholder:text-black/40 transition-colors duration-200 ease-in-out focus:border-[#111111] focus:outline-none sm:flex-1"
                     placeholder="Nhập email để nhận tư vấn"
                     type="email"
                   />
                   <button
-                    className="footer-fill-button inline-flex min-h-14 items-center justify-center rounded-full bg-[#111111] px-6 py-3 text-[14px] font-[600] text-white transition-colors duration-200 ease-in-out hover:bg-black focus:outline-none"
+                    className="footer-fill-button fill-black-pill inline-flex h-14 w-full items-center justify-center rounded-full bg-[#111111] px-6 text-[14px] font-[600] text-white focus:outline-none sm:w-auto sm:min-w-[120px]"
                     type="button"
                   >
                     Gửi
@@ -722,7 +793,9 @@ function OutlinePillButton({ href, label }: { href: string; label: string }) {
   return (
     <a className="radiant-outline-pill px-5 py-3 text-[15px]" href={href}>
       <span>{label}</span>
-      <ArrowUpRight size={18} />
+      <span aria-hidden="true" className="radiant-outline-pill__icon">
+        <ArrowUpRight size={18} />
+      </span>
     </a>
   );
 }
@@ -745,7 +818,11 @@ function FooterColumn({ items, title }: { items: string[]; title: string }) {
 }
 
 function FooterHeading({ children }: { children: React.ReactNode }) {
-  return <p className="text-[16px] font-[700] text-[#171717]">{children}</p>;
+  return (
+    <p className="text-[16px] leading-none font-[700] text-[#171717]">
+      {children}
+    </p>
+  );
 }
 
 function FooterContact({

@@ -2,45 +2,98 @@ const serviceCategories = [
   {
     description:
       "Thiết kế format, set quay và workflow phát sóng để mỗi buổi livestream giữ được nhịp xem và chuyển đổi rõ ràng.",
-    image:
-      "https://images.unsplash.com/photo-1707690614050-c0ff0b536ad3?auto=format&fit=crop&fm=jpg&q=80&w=1600",
     title: "Sản xuất phim",
     services: [
-      "Phim doanh nghiệp",
-      "Phim quảng cáo/TVC",
-      "Phóng sự/Phim tài liệu ngắn",
-      "Sản xuất chương trình/Livestream",
+      {
+        image:
+          "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&fm=jpg&q=80&w=1600",
+        title: "Phim doanh nghiệp",
+      },
+      {
+        image:
+          "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&fm=jpg&q=80&w=1600",
+        title: "Phim quảng cáo/TVC",
+      },
+      {
+        image:
+          "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&fm=jpg&q=80&w=1600",
+        title: "Phóng sự/Phim tài liệu ngắn",
+      },
+      {
+        image:
+          "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&fm=jpg&q=80&w=1600",
+        title: "Sản xuất chương trình/Livestream",
+      },
     ],
   },
   {
     description:
       "Xây dựng câu chuyện hình ảnh giúp thương hiệu xuất hiện chỉn chu, có chiều sâu và dễ ghi nhớ trên mọi điểm chạm số.",
-    image:
-      "https://images.unsplash.com/photo-1768471125958-78556538fadc?auto=format&fit=crop&fm=jpg&q=80&w=1600",
     title: "Viết Kịch bản",
     services: [
-      "Xây kênh Tiktok",
-      "Xây kênh Youtube",
-      "Video Marketing",
-      "Video giới thiệu sản phẩm",
-      "Video Highlight sự kiện",
-      "Sản xuất khoá học online",
-      "Video Animation",
-      "Video 2D",
+      {
+        image:
+          "https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&fm=jpg&q=80&w=1600",
+        title: "Xây kênh Tiktok",
+      },
+      {
+        image:
+          "https://images.unsplash.com/photo-1496171367470-9ed9a91ea931?auto=format&fit=crop&fm=jpg&q=80&w=1600",
+        title: "Xây kênh Youtube",
+      },
+      {
+        image:
+          "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&fm=jpg&q=80&w=1600",
+        title: "Video Marketing",
+      },
+      {
+        image:
+          "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&fm=jpg&q=80&w=1600",
+        title: "Video giới thiệu sản phẩm",
+      },
+      {
+        image:
+          "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&fm=jpg&q=80&w=1600",
+        title: "Video Highlight sự kiện",
+      },
+      {
+        image:
+          "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&fm=jpg&q=80&w=1600",
+        title: "Sản xuất khoá học online",
+      },
+      {
+        image:
+          "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&fm=jpg&q=80&w=1600",
+        title: "Video Animation",
+      },
+      {
+        image:
+          "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&fm=jpg&q=80&w=1600",
+        title: "Video 2D",
+      },
     ],
   },
   {
     description:
       "Tối ưu dựng phim, màu sắc và motion để bản phát hành cuối cùng sắc nét, đồng nhất và sẵn sàng cho nhiều nền tảng.",
-    image:
-      "https://images.unsplash.com/photo-1773525911805-bebab1d3e0e4?auto=format&fit=crop&fm=jpg&q=80&w=1600",
     title: "Hậu kỳ & Kỹ thuật số",
-    services: ["Edit video", "Video Animation/2D"],
+    services: [
+      {
+        image:
+          "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&fm=jpg&q=80&w=1600",
+        title: "Edit video",
+      },
+      {
+        image:
+          "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&fm=jpg&q=80&w=1600",
+        title: "Video Animation/2D",
+      },
+    ],
   },
 ] as const;
 
 export const serviceColumns = serviceCategories.map((category) => ({
-  services: [...category.services],
+  services: category.services.map((service) => service.title),
   title: category.title,
 })) as ReadonlyArray<{
   services: readonly string[];
@@ -51,8 +104,8 @@ export const focusServices = serviceCategories.flatMap((category) =>
   category.services.map((service) => ({
     description: category.description,
     eyebrow: category.title,
-    image: category.image,
-    title: service,
+    image: service.image,
+    title: service.title,
   })),
 ) as ReadonlyArray<{
   description: string;

@@ -444,27 +444,42 @@ export function FeaturedProjectsSection() {
     >
       <div
         ref={titleLayerRef}
-        className="featured-work-title-layer pointer-events-none sticky top-0 z-20 -mb-[100vh] flex h-screen items-center justify-center px-4"
+        className="featured-work-title-layer pointer-events-none sticky top-0 z-30 -mb-[100vh] flex h-screen items-center justify-center px-4"
       >
         <Link
           aria-label="Xem danh sách dự án"
-          className="featured-work-title-link pointer-events-auto group inline-flex items-start gap-2 focus-ring"
+          className="featured-work-title-link pointer-events-auto group focus-ring"
           href="/projects"
         >
-          <h2 className="text-center text-[42px] font-[700] leading-none tracking-normal sm:text-[62px] lg:text-[92px]">
-            <span className="featured-work-title-link__text inline-block">
-              Dự án nổi bật
+          <span className="relative inline-grid place-items-center text-[#171717]">
+            <span className="col-start-1 row-start-1 inline-flex items-start gap-2">
+              <h2 className="text-center text-[42px] font-[700] leading-none tracking-normal sm:text-[62px] lg:text-[92px]">
+                <span className="featured-work-title-link__text inline-block">
+                  Dự án nổi bật
+                </span>
+              </h2>
+              <span className="pt-1 text-[18px] font-[600] leading-none tracking-normal sm:text-[24px] lg:text-[34px]">
+                ({featuredProjectCount})
+              </span>
             </span>
-          </h2>
-          <span className="pt-1 text-[18px] font-[600] leading-none tracking-normal sm:text-[24px] lg:text-[34px]">
-            ({featuredProjectCount})
+            <span
+              aria-hidden="true"
+              className="pointer-events-none col-start-1 row-start-1 inline-flex items-start gap-2 text-white mix-blend-difference"
+            >
+              <span className="text-center text-[42px] font-[700] leading-none tracking-normal sm:text-[62px] lg:text-[92px]">
+                Dự án nổi bật
+              </span>
+              <span className="pt-1 text-[18px] font-[600] leading-none tracking-normal sm:text-[24px] lg:text-[34px]">
+                ({featuredProjectCount})
+              </span>
+            </span>
           </span>
         </Link>
       </div>
 
       <div
         ref={sceneRef}
-        className="works-depth-scene relative z-10 mt-[60vh] flex w-full flex-col overflow-hidden pt-[20vh] lg:gap-y-[8.75rem] lg:pt-[30vh]"
+        className="works-depth-scene relative z-10 mt-[10vh] flex w-full flex-col overflow-hidden pt-[4vh] sm:mt-[14vh] sm:pt-[6vh] lg:mt-[30vh] lg:gap-y-[8.75rem] lg:pt-[15vh]"
       >
         {featuredProjectRows.map((row, rowIndex) => (
           <div

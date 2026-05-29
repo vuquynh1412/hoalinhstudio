@@ -10,4 +10,5 @@ export {
   type SmoothScrollMode,
   type UseLenisScrollSyncOptions,
 } from "./use-lenis-scroll-sync";
+export { useScrollReveal } from "./use-scroll-reveal";
 export { clamp, lerp, prefersReducedMotion } from "./utils";
