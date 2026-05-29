@@ -49,6 +49,7 @@ export function HomePage({ locale }: HomePageProps) {
   const [introState, setIntroState] = useState<
     "visible" | "closing" | "hidden"
   >("visible");
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const [activeServiceIndex, setActiveServiceIndex] = useState(0);
   const [isServiceAutoplayPaused, setIsServiceAutoplayPaused] = useState(false);
   const [isDesktopServices, setIsDesktopServices] = useState(false);
@@ -58,6 +59,8 @@ export function HomePage({ locale }: HomePageProps) {
   const aboutSectionRef = useRef<HTMLElement | null>(null);
   const aboutParagraphRef = useRef<HTMLParagraphElement | null>(null);
   const aboutWordRefs = useRef<Array<HTMLSpanElement | null>>([]);
+  const headerIdleTimerRef = useRef<number | null>(null);
+  const lastScrollYRef = useRef(0);
 
   const serviceCount = focusServices.length;
 
@@ -136,6 +139,67 @@ export function HomePage({ locale }: HomePageProps) {
     return () => {
       window.clearTimeout(closeTimer);
       window.clearTimeout(hideTimer);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const clearHeaderIdleTimer = () => {
+      if (headerIdleTimerRef.current !== null) {
+        window.clearTimeout(headerIdleTimerRef.current);
+        headerIdleTimerRef.current = null;
+      }
+    };
+
+    const scheduleHeaderIdleHide = (scrollY: number) => {
+      clearHeaderIdleTimer();
+
+      if (scrollY <= 24) {
+        return;
+      }
+
+      headerIdleTimerRef.current = window.setTimeout(() => {
+        setIsHeaderVisible(false);
+      }, 3000);
+    };
+
+    let frameId = 0;
+    lastScrollYRef.current = window.scrollY;
+    scheduleHeaderIdleHide(lastScrollYRef.current);
+
+    const onScroll = () => {
+      if (frameId) {
+        return;
+      }
+
+      frameId = window.requestAnimationFrame(() => {
+        const currentScrollY = Math.max(window.scrollY, 0);
+        const delta = currentScrollY - lastScrollYRef.current;
+
+        if (currentScrollY <= 24) {
+          setIsHeaderVisible(true);
+        } else if (Math.abs(delta) >= 8) {
+          setIsHeaderVisible(delta < 0);
+        }
+
+        scheduleHeaderIdleHide(currentScrollY);
+        lastScrollYRef.current = currentScrollY;
+        frameId = 0;
+      });
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    return () => {
+      if (frameId) {
+        window.cancelAnimationFrame(frameId);
+      }
+
+      clearHeaderIdleTimer();
+      window.removeEventListener("scroll", onScroll);
     };
   }, []);
 
@@ -251,8 +315,16 @@ export function HomePage({ locale }: HomePageProps) {
         />
 
         <div className="hero-screen relative z-30 flex w-full flex-col px-4 py-4 sm:px-5 sm:py-5">
-          <header className="relative z-40 mx-auto w-full max-w-[1440px]">
-            <div className="flex items-center justify-between gap-3 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:gap-4">
+          <header className="relative z-40 mx-auto h-11 w-full max-w-[1440px] sm:h-12 lg:h-[52px]">
+            <div
+              className={cn(
+                "fixed inset-x-4 top-4 z-50 will-change-transform transition-[transform,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] sm:inset-x-5 sm:top-5",
+                isHeaderVisible
+                  ? "translate-y-0 opacity-100"
+                  : "pointer-events-none -translate-y-[calc(100%+24px)] opacity-0",
+              )}
+            >
+              <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between gap-3 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:gap-4">
               <nav
                 aria-label="Primary"
                 className="hidden items-center justify-start gap-1 text-[16px] font-[500] text-black lg:flex"
@@ -309,6 +381,7 @@ export function HomePage({ locale }: HomePageProps) {
                   <ArrowUpRight size={18} strokeWidth={2} />
                 </a>
               </div>
+              </div>
             </div>
           </header>
 
@@ -319,11 +392,11 @@ export function HomePage({ locale }: HomePageProps) {
               </p>
               <Image
                 alt="Hoa Linh studio"
-                className="mt-2 h-auto w-[min(86vw,380px)] sm:w-[min(70vw,420px)]"
-                height={112}
+                className="mt-2 h-auto w-[clamp(220px,82vw,320px)] sm:w-[clamp(320px,68vw,440px)] md:w-[clamp(420px,58vw,560px)] lg:w-[clamp(520px,48vw,660px)] xl:w-[clamp(620px,42vw,760px)]"
+                height={224}
                 priority
                 src="/logo-hoa-linh-full.svg"
-                width={380}
+                width={760}
               />
             </div>
           </div>
@@ -687,7 +760,7 @@ export function HomePage({ locale }: HomePageProps) {
           </div>
 
           <div
-            className="relative flex min-h-[280px] flex-col items-center justify-start px-4 pt-[56px] text-center sm:min-h-[360px] sm:px-6 lg:min-h-[420px] lg:px-10"
+            className="relative flex min-h-[280px] flex-col items-center justify-start px-[40px] pt-[56px] text-center sm:min-h-[360px] sm:px-6 lg:min-h-[420px] lg:px-10"
             data-scroll-reveal="enter"
           >
             <h2 className="text-[24px] font-[700] uppercase text-[#27272a] sm:text-[42px] lg:text-[48px]">
