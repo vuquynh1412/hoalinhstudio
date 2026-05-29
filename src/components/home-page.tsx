@@ -65,7 +65,7 @@ export function HomePage({ locale }: HomePageProps) {
 
     return window.scrollY <= 8;
   });
-  const [visibleHeaderNavCount, setVisibleHeaderNavCount] = useState(
+  const [visibleHeaderNavCount, setVisibleHeaderNavCount] = useState<number>(
     headerNavigationItems.length,
   );
   const [isHeaderMenuOpen, setIsHeaderMenuOpen] = useState(false);
