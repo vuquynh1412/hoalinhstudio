@@ -48,10 +48,18 @@ body {
   min-height: 100vh;
 }
 
+.hero-screen-mobile {
+  min-height: 76vh;
+}
+
 @supports (height: 100svh) {
   .hero-screen {
     height: 100svh;
     min-height: 100svh;
+  }
+
+  .hero-screen-mobile {
+    min-height: 76svh;
   }
 }
 
@@ -59,6 +67,16 @@ body {
   .hero-screen {
     height: 100dvh;
     min-height: 100dvh;
+  }
+
+  .hero-screen-mobile {
+    min-height: 76dvh;
+  }
+}
+
+@media (min-width: 640px) {
+  .hero-screen-mobile {
+    min-height: auto;
   }
 }
 
@@ -133,7 +151,6 @@ a {
 }
 
 .radiant-outline-pill::before,
-.hero-ghost-pill::before,
 .fill-black-pill::before,
 .footer-fill-button::before {
   content: "";
@@ -155,7 +172,6 @@ a {
 }
 
 .radiant-outline-pill svg,
-.hero-ghost-pill svg,
 .fill-black-pill svg,
 .footer-fill-button svg {
   transition: transform 320ms ease-in-out;
@@ -168,9 +184,18 @@ a {
 }
 
 .hero-ghost-pill {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(39, 39, 42, 0.9);
+  transition:
+    background-color 260ms ease-in-out,
+    border-color 260ms ease-in-out,
+    color 260ms ease-in-out,
+    opacity 260ms ease-in-out;
 }
 
 .fill-black-pill {
@@ -195,6 +220,12 @@ a {
 .service-carousel-card {
   cursor: pointer;
   will-change: transform, width, height, opacity;
+}
+
+.service-carousel-card--active {
+  box-shadow:
+    0 0 16.805px 5.602px rgba(0, 0, 0, 0.25),
+    0 11.203px 44.813px 22.407px rgba(0, 0, 0, 0.25);
 }
 
 .service-carousel-side-title {
@@ -360,14 +391,12 @@ a {
   }
 
   .radiant-outline-pill:hover::before,
-  .hero-ghost-pill:hover::before,
   .fill-black-pill:hover::before,
   .footer-fill-button:hover::before {
     transform: translateX(145%) skewX(-18deg);
   }
 
   .radiant-outline-pill:hover svg,
-  .hero-ghost-pill:hover svg,
   .fill-black-pill:hover svg,
   .footer-fill-button:hover svg {
     transform: translateX(4px);
@@ -381,9 +410,8 @@ a {
 
   .hero-ghost-pill:hover {
     background: transparent;
-    border-color: rgba(39, 39, 42, 0.22);
+    border-color: rgba(156, 163, 175, 0.95);
     color: #27272a;
-    transform: translateY(-1px);
   }
 
   .fill-black-pill:hover {
@@ -584,6 +612,14 @@ a {
   transition: opacity 0.12s linear;
 }
 
+.scroll-reveal-word--primary .scroll-reveal-word__shadow {
+  opacity: 0;
+}
+
+.scroll-reveal-word--primary .scroll-reveal-word__fill {
+  color: var(--primary);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .intro-loader,
   .intro-loader__ring,
@@ -601,6 +637,10 @@ a {
 
   .scroll-reveal-word__shadow {
     color: #27272a;
+  }
+
+  .scroll-reveal-word--primary .scroll-reveal-word__shadow {
+    opacity: 0;
   }
 
   .scroll-reveal-word__fill {

@@ -469,21 +469,18 @@ export function FeaturedProjectsSection() {
                 Dự án nổi bật
               </span>
             </h2>
-            <span className="pt-1 text-[18px] font-[600] leading-none tracking-normal sm:text-[24px] lg:text-[34px]">
-              ({featuredProjectCount})
-            </span>
           </span>
         </Link>
       </div>
 
       <div
         ref={sceneRef}
-        className="works-depth-scene relative z-10 mt-[10vh] flex w-full flex-col overflow-hidden pt-[4vh] sm:mt-[14vh] sm:pt-[6vh] lg:mt-[30vh] lg:gap-y-[8.75rem] lg:pt-[15vh]"
+        className="works-depth-scene relative z-10  flex w-full flex-col overflow-hidden  lg:gap-y-[4rem]"
       >
         {featuredProjectRows.map((row, rowIndex) => (
           <div
             className={cn(
-              "grid grid-cols-6 gap-x-2.5 px-5 lg:grid-cols-12",
+              "grid grid-cols-6 gap-x-2.5 px-5 lg:grid-cols-12 lg:px-8",
               row.className,
             )}
             key={row.id}
