@@ -591,7 +591,7 @@ export function HomePage({ locale }: HomePageProps) {
       </section>
 
       <section
-        className="relative isolate flex items-center justify-center overflow-hidden bg-white px-4 py-[88px] text-[#27272a] sm:px-6 sm:py-24 lg:min-h-screen lg:px-0 lg:py-0"
+        className="relative isolate flex items-center justify-center overflow-hidden bg-white px-4 pt-0 pb-[88px] text-[#27272a] sm:px-6 sm:py-24 lg:min-h-screen lg:px-0 lg:py-0"
         id="about"
         ref={aboutSectionRef}
       >
@@ -659,7 +659,7 @@ export function HomePage({ locale }: HomePageProps) {
           <div className="absolute inset-x-0 top-0 h-[160px] bg-[linear-gradient(180deg,#ffffff_0%,rgba(255,255,255,0.56)_52%,rgba(255,255,255,0)_100%)]" />
         </div>
 
-        <div className="relative z-10 flex flex-col gap-4  sm:gap-5 sm:pb-20 lg:min-h-screen lg:justify-center lg:gap-6 lg:pb-24">
+        <div className="relative z-10 flex flex-col gap-4 pb-16 sm:gap-5 sm:pb-20 lg:min-h-screen lg:justify-center lg:gap-6 lg:pb-24">
           <div
             className="mx-auto w-full max-w-[1320px] px-4 sm:px-6 lg:px-10"
             data-scroll-reveal="enter"
